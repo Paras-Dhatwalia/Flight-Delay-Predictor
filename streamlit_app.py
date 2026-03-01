@@ -590,7 +590,12 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .width(w)
         .height(h);
 
-      // Arc
+      // Arc config
+      const DASH_LEN  = 0.6;
+      const DASH_GAP  = 0.3;
+      const CYCLE_MS  = 2500;
+      const DASH_UNIT = DASH_LEN + DASH_GAP;
+
       const arcData = [{{
         startLat: {o_lat}, startLng: {o_lng},
         endLat: {d_lat},   endLng: {d_lng},
@@ -601,9 +606,9 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .arcColor('color')
         .arcAltitudeAutoScale(0.45)
         .arcStroke(1.5)
-        .arcDashLength(0.6)
-        .arcDashGap(0.3)
-        .arcDashAnimateTime(2500);
+        .arcDashLength(DASH_LEN)
+        .arcDashGap(DASH_GAP)
+        .arcDashAnimateTime(CYCLE_MS);
 
       // Airport markers
       const points = [
@@ -629,21 +634,73 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .labelAltitude(0.02)
         .labelResolution(2);
 
-      // Plane at midpoint
-      const planeData = [{{
-        lat: {mid_lat}, lng: {mid_lng}, label: '✈', size: 2.2
-      }}];
+      // Great-circle interpolation for plane animation
+      const toRad = d => d * Math.PI / 180;
+      const toDeg = r => r * 180 / Math.PI;
+      const lat1 = toRad({o_lat}), lng1 = toRad({o_lng});
+      const lat2 = toRad({d_lat}), lng2 = toRad({d_lng});
+
+      function gcInterp(t) {{
+        const d = 2 * Math.asin(Math.sqrt(
+          Math.pow(Math.sin((lat2-lat1)/2),2) +
+          Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin((lng2-lng1)/2),2)
+        ));
+        if (d < 1e-10) return {{ lat: {o_lat}, lng: {o_lng} }};
+        const A = Math.sin((1-t)*d) / Math.sin(d);
+        const B = Math.sin(t*d) / Math.sin(d);
+        const x = A*Math.cos(lat1)*Math.cos(lng1) + B*Math.cos(lat2)*Math.cos(lng2);
+        const y = A*Math.cos(lat1)*Math.sin(lng1) + B*Math.cos(lat2)*Math.sin(lng2);
+        const z = A*Math.sin(lat1) + B*Math.sin(lat2);
+        return {{ lat: toDeg(Math.atan2(z, Math.sqrt(x*x+y*y))), lng: toDeg(Math.atan2(y, x)) }};
+      }}
+
+      // Bearing for rotation
+      function bearing(t) {{
+        const p1 = gcInterp(Math.max(0, t - 0.01));
+        const p2 = gcInterp(Math.min(1, t + 0.01));
+        const dLng = toRad(p2.lng - p1.lng);
+        const la1 = toRad(p1.lat), la2 = toRad(p2.lat);
+        const bx = Math.sin(dLng) * Math.cos(la2);
+        const by = Math.cos(la1)*Math.sin(la2) - Math.sin(la1)*Math.cos(la2)*Math.cos(dLng);
+        return toDeg(Math.atan2(bx, by));
+      }}
+
+      // Animated plane
+      let planeEl = null;
+      const planeData = [{{ lat: {o_lat}, lng: {o_lng} }}];
       globe
         .htmlElementsData(planeData)
         .htmlLat('lat')
         .htmlLng('lng')
-        .htmlAltitude(0.08)
+        .htmlAltitude(0.065)
         .htmlElement(d => {{
           const el = document.createElement('div');
-          el.style.cssText = 'font-size:22px;filter:drop-shadow(0 0 6px {arc_color});pointer-events:none;';
+          el.style.cssText = 'font-size:20px;pointer-events:none;'
+            + 'filter:drop-shadow(0 0 8px {arc_color});transition:transform 0.1s linear;';
           el.textContent = '✈';
+          planeEl = el;
           return el;
         }});
+
+      // Animation loop — plane rides in the dash gap
+      const startTime = performance.now();
+      function animatePlane() {{
+        const elapsed = performance.now() - startTime;
+        const dashProgress = (elapsed % CYCLE_MS) / CYCLE_MS;
+        // Place plane in the middle of the first gap
+        const t = (dashProgress * DASH_UNIT + DASH_LEN + DASH_GAP / 2) % 1;
+        const pos = gcInterp(t);
+        planeData[0].lat = pos.lat;
+        planeData[0].lng = pos.lng;
+        globe.htmlElementsData(planeData);
+
+        if (planeEl) {{
+          const angle = bearing(t);
+          planeEl.style.transform = 'rotate(' + (angle + 120) + 'deg)';
+        }}
+        requestAnimationFrame(animatePlane);
+      }}
+      requestAnimationFrame(animatePlane);
 
       // Camera — frame both airports
       globe.pointOfView({{ lat: {mid_lat}, lng: {mid_lng}, altitude: 2.0 }}, 1000);
