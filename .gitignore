@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+.env
+.venv
+venv/
+env/
+
+# Data (too large for GitHub)
+data/
+Dataset/
+*.csv
+*.parquet
+*.feather
+
+# Model artifacts — keep only the latest
+backend/artifacts/model_20260301_141057.txt
+backend/artifacts/model_20260301_144526.txt
+backend/artifacts/params_20260301_141057.json
+backend/artifacts/params_20260301_144526.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Reports (regeneratable)
+reports/

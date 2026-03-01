@@ -1,0 +1,19 @@
+[
+  "CRS_DEP_TIME_sin",
+  "CRS_DEP_TIME_cos",
+  "DayOfWeek_sin",
+  "DayOfWeek_cos",
+  "Month_sin",
+  "Month_cos",
+  "departure_hour",
+  "route_distance_km",
+  "DISTANCE",
+  "CRS_ELAPSED_TIME",
+  "OP_CARRIER_te",
+  "ORIGIN_te",
+  "DEST_te",
+  "TAIL_NUM_te",
+  "route_delay_rate",
+  "airline_delay_rate",
+  "is_near_holiday"
+]
