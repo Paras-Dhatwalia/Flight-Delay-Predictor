@@ -590,12 +590,7 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .width(w)
         .height(h);
 
-      // Arc config
-      const DASH_LEN  = 0.6;
-      const DASH_GAP  = 0.3;
-      const CYCLE_MS  = 2500;
-      const DASH_UNIT = DASH_LEN + DASH_GAP;
-
+      // Arc
       const arcData = [{{
         startLat: {o_lat}, startLng: {o_lng},
         endLat: {d_lat},   endLng: {d_lng},
@@ -606,9 +601,9 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .arcColor('color')
         .arcAltitudeAutoScale(0.45)
         .arcStroke(1.5)
-        .arcDashLength(DASH_LEN)
-        .arcDashGap(DASH_GAP)
-        .arcDashAnimateTime(CYCLE_MS);
+        .arcDashLength(0.6)
+        .arcDashGap(0.3)
+        .arcDashAnimateTime(2500);
 
       // Airport markers
       const points = [
@@ -634,92 +629,7 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .labelAltitude(0.02)
         .labelResolution(2);
 
-      // Great-circle interpolation for plane animation
-      const toRad = d => d * Math.PI / 180;
-      const toDeg = r => r * 180 / Math.PI;
-      const lat1 = toRad({o_lat}), lng1 = toRad({o_lng});
-      const lat2 = toRad({d_lat}), lng2 = toRad({d_lng});
-
-      // Angular distance for arc altitude calc
-      const angDist = 2 * Math.asin(Math.sqrt(
-        Math.pow(Math.sin((lat2-lat1)/2),2) +
-        Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin((lng2-lng1)/2),2)
-      ));
-      // Match globe.gl arcAltitudeAutoScale(0.45)
-      const arcPeakAlt = 0.45 * angDist / Math.PI;
-
-      function gcInterp(t) {{
-        if (angDist < 1e-10) return {{ lat: {o_lat}, lng: {o_lng} }};
-        const A = Math.sin((1-t)*angDist) / Math.sin(angDist);
-        const B = Math.sin(t*angDist) / Math.sin(angDist);
-        const x = A*Math.cos(lat1)*Math.cos(lng1) + B*Math.cos(lat2)*Math.cos(lng2);
-        const y = A*Math.cos(lat1)*Math.sin(lng1) + B*Math.cos(lat2)*Math.sin(lng2);
-        const z = A*Math.sin(lat1) + B*Math.sin(lat2);
-        return {{ lat: toDeg(Math.atan2(z, Math.sqrt(x*x+y*y))), lng: toDeg(Math.atan2(y, x)) }};
-      }}
-
-      // Add plane directly to Three.js scene (bypasses globe.gl re-creation)
-      setTimeout(() => {{
-        const scene = globe.scene();
-        const camera = globe.camera();
-        const GLOBE_R = 100;
-
-        // Draw plane emoji onto canvas → texture → sprite
-        const canvas = document.createElement('canvas');
-        canvas.width = 128; canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        ctx.shadowColor = '{arc_color}';
-        ctx.shadowBlur = 18;
-        ctx.font = '72px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('✈', 64, 64);
-
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({{
-          map: texture, transparent: true, depthWrite: false
-        }});
-        const planeSprite = new THREE.Sprite(material);
-        planeSprite.scale.set(5, 5, 1);
-        scene.add(planeSprite);
-
-        // Match three-globe polar2Cartesian exactly
-        function geoTo3D(lat, lng, alt) {{
-          const phi = (90 - lat) * Math.PI / 180;
-          const theta = (90 - lng) * Math.PI / 180;
-          const r = GLOBE_R * (1 + alt);
-          return new THREE.Vector3(
-            r * Math.sin(phi) * Math.cos(theta),
-            r * Math.cos(phi),
-            -r * Math.sin(phi) * Math.sin(theta)
-          );
-        }}
-
-        const startTime = performance.now();
-        function animatePlane() {{
-          const elapsed = performance.now() - startTime;
-          const dashFrac = (elapsed % CYCLE_MS) / CYCLE_MS;
-          const t = (dashFrac + DASH_LEN / DASH_UNIT + DASH_GAP / (2 * DASH_UNIT)) % 1;
-          const tAhead = Math.min(1, t + 0.02);
-
-          const pos = gcInterp(t);
-          const alt = arcPeakAlt * 4 * t * (1 - t);
-          const worldPos = geoTo3D(pos.lat, pos.lng, alt);
-          planeSprite.position.copy(worldPos);
-
-          // Rotate sprite so nose points toward destination
-          const posAhead = gcInterp(tAhead);
-          const altAhead = arcPeakAlt * 4 * tAhead * (1 - tAhead);
-          const wpAhead = geoTo3D(posAhead.lat, posAhead.lng, altAhead);
-          const cur2 = worldPos.clone().project(camera);
-          const fwd2 = wpAhead.clone().project(camera);
-          const screenAngle = Math.atan2(fwd2.y - cur2.y, fwd2.x - cur2.x);
-          material.rotation = screenAngle + Math.PI / 4;
-
-          requestAnimationFrame(animatePlane);
-        }}
-        animatePlane();
-      }}, 600);
+      // No animated plane — clean arc-only visualization
 
       // Camera — frame both airports
       globe.pointOfView({{ lat: {mid_lat}, lng: {mid_lng}, altitude: 2.0 }}, 1000);
