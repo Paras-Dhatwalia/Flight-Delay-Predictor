@@ -1,0 +1,21 @@
+{
+  "pr_auc": 0.231948,
+  "roc_auc": 0.598713,
+  "f1": 0.327916,
+  "precision_at_50_recall": 0.231205,
+  "recall_at_80_precision": 0.0,
+  "brier_score": 0.150732,
+  "confusion_matrix": [
+    [
+      441700,
+      507444
+    ],
+    [
+      67388,
+      140233
+    ]
+  ],
+  "classification_report": "              precision    recall  f1-score   support\n\n     On-Time       0.87      0.47      0.61    949144\n     Delayed       0.22      0.68      0.33    207621\n\n    accuracy                           0.50   1156765\n   macro avg       0.54      0.57      0.47   1156765\nweighted avg       0.75      0.50      0.56   1156765\n",
+  "optimal_threshold": 0.2085,
+  "threshold_used": 0.22442357806026503
+}

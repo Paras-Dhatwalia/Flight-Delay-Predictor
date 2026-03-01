@@ -47,5 +47,5 @@ Thumbs.db
 *.log
 logs/
 
-# Reports (regeneratable)
-reports/
+# Reports — include HTML, PDF, and plot PNGs
+# reports/
