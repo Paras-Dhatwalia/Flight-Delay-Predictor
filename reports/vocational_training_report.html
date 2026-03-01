@@ -144,12 +144,7 @@
     padding: 10px 14px; margin: 14px 0; font-style: italic;
   }
 
-  /* ── Figure Placeholder ───────────────────────────────────── */
-  .figure-placeholder {
-    border: 2px dashed #bbb; background: #fafafa; padding: 25px 18px;
-    text-align: center; margin: 14px 0; color: #777; font-style: italic;
-    font-size: 10.5pt; border-radius: 4px;
-  }
+  /* ── Figure ─────────────────────────────────────────────── */
   .figure-caption {
     text-align: center; font-size: 10pt; color: #444;
     margin: -6px 0 14px 0; font-style: italic;
@@ -188,594 +183,326 @@
   <h2>Table of Contents</h2>
   <ol class="toc-list">
     <li><span class="toc-num">1.</span><span class="toc-title">Introduction</span></li>
-    <li><span class="toc-num">2.</span><span class="toc-title">Background Study</span></li>
-    <li><span class="toc-num">3.</span><span class="toc-title">Problem Statement</span></li>
-    <li><span class="toc-num">4.</span><span class="toc-title">Objectives</span></li>
-    <li><span class="toc-num">5.</span><span class="toc-title">Literature Review</span></li>
-    <li><span class="toc-num">6.</span><span class="toc-title">Dataset Description</span></li>
-    <li><span class="toc-num">7.</span><span class="toc-title">Data Preprocessing</span></li>
-    <li><span class="toc-num">8.</span><span class="toc-title">Temporal Train&ndash;Validation&ndash;Test Splitting</span></li>
-    <li><span class="toc-num">9.</span><span class="toc-title">Exploratory Data Analysis</span></li>
-    <li><span class="toc-num">10.</span><span class="toc-title">Feature Engineering</span></li>
-    <li><span class="toc-num">11.</span><span class="toc-title">Machine Learning Algorithm &mdash; LightGBM</span></li>
-    <li><span class="toc-num">12.</span><span class="toc-title">Hyperparameter Optimisation with Optuna</span></li>
-    <li><span class="toc-num">13.</span><span class="toc-title">Model Training Process</span></li>
-    <li><span class="toc-num">14.</span><span class="toc-title">Model Evaluation Metrics</span></li>
-    <li><span class="toc-num">15.</span><span class="toc-title">Results and Analysis</span></li>
-    <li><span class="toc-num">16.</span><span class="toc-title">SHAP Interpretability and Leakage Audit</span></li>
-    <li><span class="toc-num">17.</span><span class="toc-title">Confusion Matrix Analysis</span></li>
-    <li><span class="toc-num">18.</span><span class="toc-title">Full-Stack Web Application</span></li>
-    <li><span class="toc-num">19.</span><span class="toc-title">Docker Deployment</span></li>
-    <li><span class="toc-num">20.</span><span class="toc-title">Project Structure</span></li>
-    <li><span class="toc-num">21.</span><span class="toc-title">Design Decisions and Trade-offs</span></li>
-    <li><span class="toc-num">22.</span><span class="toc-title">Limitations</span></li>
-    <li><span class="toc-num">23.</span><span class="toc-title">Future Scope</span></li>
-    <li><span class="toc-num">24.</span><span class="toc-title">Conclusion</span></li>
-    <li><span class="toc-num">25.</span><span class="toc-title">Tools and Technologies</span></li>
-    <li><span class="toc-num">26.</span><span class="toc-title">References</span></li>
+    <li><span class="toc-num">2.</span><span class="toc-title">Problem Statement</span></li>
+    <li><span class="toc-num">3.</span><span class="toc-title">Literature Review</span></li>
+    <li><span class="toc-num">4.</span><span class="toc-title">Dataset Description</span></li>
+    <li><span class="toc-num">5.</span><span class="toc-title">Data Preprocessing &amp; Temporal Splitting</span></li>
+    <li><span class="toc-num">6.</span><span class="toc-title">Feature Engineering</span></li>
+    <li><span class="toc-num">7.</span><span class="toc-title">LightGBM &amp; Hyperparameter Optimisation</span></li>
+    <li><span class="toc-num">8.</span><span class="toc-title">Model Training Process</span></li>
+    <li><span class="toc-num">9.</span><span class="toc-title">Evaluation &amp; Results</span></li>
+    <li><span class="toc-num">10.</span><span class="toc-title">SHAP Interpretability &amp; Leakage Audit</span></li>
+    <li><span class="toc-num">11.</span><span class="toc-title">Web Application &amp; Deployment</span></li>
+    <li><span class="toc-num">12.</span><span class="toc-title">Project Structure</span></li>
+    <li><span class="toc-num">13.</span><span class="toc-title">Design Decisions</span></li>
+    <li><span class="toc-num">14.</span><span class="toc-title">Limitations &amp; Future Scope</span></li>
+    <li><span class="toc-num">15.</span><span class="toc-title">Conclusion</span></li>
+    <li><span class="toc-num">16.</span><span class="toc-title">References</span></li>
   </ol>
 </div>
 
 <!-- ═══════════════════════ ABSTRACT ═════════════════════════ -->
 <div class="abstract-page page-break">
   <h2>Abstract</h2>
-  <p>Flight delays impose significant economic and operational costs on airlines, airports, and passengers worldwide. While airlines monitor delays internally, passengers and operational planners lack accessible, real-time predictive tools. This project builds an end-to-end machine learning system that predicts whether a commercial flight will arrive 15 or more minutes late, using only information available 24 hours before scheduled departure.</p>
-  <p>The system employs a LightGBM gradient-boosted decision tree trained on the U.S. Bureau of Transportation Statistics (BTS) On-Time Performance dataset. A 17-feature engineering pipeline transforms raw flight records through cyclic temporal encoding, Haversine great-circle distance computation, K-Fold smoothed target encoding, historical delay aggregates, and holiday proximity detection. A strict temporal split (January&ndash;August for training, September&ndash;October for validation, November&ndash;December for testing) simulates real deployment conditions where the model only ever predicts genuinely future flights.</p>
-  <p>Evaluation uses Precision&ndash;Recall AUC (PR-AUC) as the primary metric&mdash;more informative than ROC-AUC given the ~20% imbalanced positive class. SHAP TreeExplainer provides per-prediction feature attributions, enabling interpretable risk explanations. A comprehensive three-stage leakage audit (blacklist enforcement, high-correlation scan, and SHAP importance sanity check) ensures that no post-departure information contaminates the predictions.</p>
-  <p>The trained model is deployed as a production-ready web application: a FastAPI backend serves predictions with SHAP-based explanations via a REST API, and a React + Tailwind CSS frontend presents an interactive flight lookup interface with a probability gauge, risk-factor bar chart, and dark-mode support. Both services are containerised with Docker Compose for reproducible, single-command deployment. This project demonstrates that principled machine learning&mdash;combining rigorous leakage prevention, appropriate evaluation metrics, model interpretability, and modern full-stack engineering&mdash;can produce actionable predictive tools for transportation logistics.</p>
+  <p>This project builds an end-to-end machine learning system that predicts whether a U.S. domestic flight will arrive 15 or more minutes late, using only information available 24 hours before departure. The system employs a LightGBM gradient-boosted decision tree trained on the Bureau of Transportation Statistics (BTS) On-Time Performance dataset (~7 million flights). A 17-feature engineering pipeline transforms raw records through cyclic temporal encoding, Haversine great-circle distance, K-Fold smoothed target encoding (&lambda;=20), historical delay aggregates, and holiday proximity detection.</p>
+  <p>A strict temporal split (Jan&ndash;Aug training, Sep&ndash;Oct validation, Nov&ndash;Dec test) simulates real deployment. Evaluation uses PR-AUC as the primary metric given the ~20% imbalanced positive class. A three-stage leakage audit (blacklist enforcement, high-correlation scan, SHAP importance check) ensures no post-departure information contaminates predictions. SHAP TreeExplainer provides per-prediction feature attributions.</p>
+  <p>The model is deployed as a Streamlit web application on Streamlit Community Cloud, featuring an interactive 3D globe, airline-branded boarding pass cards, a SHAP waterfall chart, and a modular component architecture. A FastAPI + React alternative is also containerised via Docker Compose.</p>
 </div>
 
 <!-- ═══════════════════ 1. INTRODUCTION ═════════════════════ -->
 <div class="page-break">
   <h2 class="section-title">1. Introduction</h2>
   <div class="section-body">
-    <p>Flight delays are one of the most persistent operational challenges in commercial aviation. According to the U.S. Federal Aviation Administration (FAA), flight delays cost the U.S. economy over $30 billion annually, encompassing airline operational costs, passenger lost productivity, and downstream cascading effects across airport networks. In 2023, approximately 21% of U.S. domestic flights arrived more than 15 minutes behind schedule, affecting hundreds of millions of passengers.</p>
-    <p>The causes of flight delays are multifaceted: weather disruptions, air traffic congestion, mechanical issues, crew scheduling conflicts, and airport capacity constraints all contribute. While airlines maintain internal operations centres that monitor delays, the travelling public and third-party operational planners have limited access to predictive delay information. Existing consumer-facing tools (e.g., FlightAware, Google Flights) primarily report real-time status rather than pre-departure predictions.</p>
-    <p>From a machine learning perspective, flight delay prediction is a compelling problem. It features a moderately imbalanced binary target (~20% delayed), rich categorical features (airline, airport codes, aircraft tail numbers), temporal patterns (hour-of-day, day-of-week, seasonal effects), and geospatial structure (route distances). The problem also introduces a critical constraint not found in typical classification tasks: <strong>temporal information leakage</strong>. Many columns in flight performance datasets&mdash;such as taxi times, actual departure and arrival times, and carrier delay breakdowns&mdash;are only available <em>after</em> a flight has departed. Using these features would produce artificially inflated accuracy that is entirely useless in practice.</p>
-    <p>This project addresses this challenge by building a complete machine learning pipeline with a strict T-24h (24 hours before departure) information boundary. Every feature used by the model&mdash;from cyclic departure-time encoding to smoothed historical airline delay rates&mdash;is knowable a full day before the flight departs. The system spans the full ML lifecycle: data ingestion, temporal splitting, feature engineering, model training with Bayesian hyperparameter optimisation, evaluation with SHAP interpretability, and deployment as a full-stack web application with Docker containerisation.</p>
+    <p>Flight delays cost the U.S. economy over $30 billion annually. In 2023, approximately 21% of domestic flights arrived more than 15 minutes late. While airlines monitor delays internally, passengers and operational planners lack accessible pre-departure predictive tools&mdash;existing consumer tools primarily report real-time status rather than forecasts.</p>
+    <p>From a machine learning perspective, flight delay prediction presents a moderately imbalanced binary target (~20% delayed), rich categorical features (airline, airport, aircraft), temporal patterns (hour, day, season), and geospatial structure (route distance). Critically, it also introduces <strong>temporal information leakage</strong>: many BTS columns (taxi times, actual departure/arrival, delay breakdowns) are only available post-departure. Using these features produces artificially inflated accuracy that is useless in practice.</p>
+    <p>This project addresses this by enforcing a strict T-24h information boundary. Every feature&mdash;from cyclic departure-time encoding to smoothed historical delay rates&mdash;is knowable 24 hours before departure. The system spans the full ML lifecycle: data ingestion, temporal splitting, feature engineering, Bayesian hyperparameter optimisation, SHAP interpretability, leakage auditing, and deployment as a full-stack web application.</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 2. BACKGROUND STUDY ═════════════════ -->
+<!-- ═══════════════════ 2. PROBLEM STATEMENT ════════════════ -->
 <div class="page-break">
-  <h2 class="section-title">2. Background Study</h2>
+  <h2 class="section-title">2. Problem Statement</h2>
   <div class="section-body">
-    <h3>2.1 The Flight Delay Problem&mdash;Operational Context</h3>
-    <p>Commercial aviation operates on tightly coupled networks. A single delayed departure at a hub airport can cascade through connecting flights, crew rotations, and gate assignments, creating system-wide disruptions. The Bureau of Transportation Statistics (BTS) tracks on-time performance for all U.S. domestic flights operated by carriers with at least 0.5% of domestic scheduled-service passenger revenue.</p>
-    <p>BTS defines a flight as &ldquo;delayed&rdquo; when it arrives 15 or more minutes after its scheduled arrival time. This 15-minute threshold is the industry standard used by the Department of Transportation (DOT) for regulatory reporting and forms the basis for contractual obligations between airlines and airports.</p>
-    <p>Delay causes are classified into five categories: <em>carrier delays</em> (maintenance, crew, aircraft cleaning), <em>weather delays</em>, <em>National Aviation System (NAS) delays</em> (air traffic control, airport operations), <em>security delays</em>, and <em>late aircraft delays</em> (propagation from a previous flight). Notably, these causal breakdowns are only available post-flight and must not be used for prediction.</p>
-
-    <h3>2.2 Traditional Approaches and Their Limitations</h3>
-    <p>Traditional delay prediction relies on operations research methods: queuing models for airport congestion, network flow models for propagation effects, and statistical regression on historical averages. Airlines use proprietary systems that combine real-time weather feeds, air traffic flow management data, and crew scheduling information.</p>
-    <p>These approaches have significant limitations for general-purpose prediction. Queuing models require real-time airport state information that is unavailable 24 hours in advance. Statistical averages fail to capture non-linear interactions between factors (e.g., a particular airline at a particular airport during holiday season). Proprietary airline systems are not accessible to passengers or third-party planners.</p>
-
-    <h3>2.3 Machine Learning for Flight Delay Prediction</h3>
-    <p>Machine learning offers a data-driven alternative that can capture complex, non-linear relationships from historical flight records. Gradient-boosted decision trees (GBDT), particularly implementations such as LightGBM and XGBoost, have emerged as the dominant approach for tabular prediction tasks. They handle mixed feature types natively, are robust to feature scaling, provide built-in feature importance, and train efficiently on datasets with millions of records.</p>
-    <p>A critical challenge unique to this domain is <strong>information leakage</strong>. Flight performance datasets contain both pre-departure features (scheduled times, airline, airports) and post-departure features (actual times, taxi durations, delay breakdowns). Na&iuml;ve inclusion of post-departure features produces models with artificially high accuracy (&gt;90%) that are entirely useless in practice because those features are unknown at prediction time. Rigorous feature blacklisting and leakage auditing are therefore essential.</p>
-
-    <h3>2.4 SHAP Interpretability</h3>
-    <p>Shapley Additive exPlanations (SHAP), introduced by Lundberg and Lee (2017), provide a theoretically grounded framework for explaining individual predictions. SHAP values decompose each prediction into additive contributions from each feature, satisfying desirable axiomatic properties: local accuracy, missingness, and consistency. For tree-based models, the TreeSHAP algorithm computes exact Shapley values in polynomial time, making it practical for production use.</p>
-    <p>In the flight delay context, SHAP enables actionable explanations such as: &ldquo;This flight has a 72% delay probability primarily because the airline&rsquo;s historical delay rate is high (+15%) and the departure time is during peak evening hours (+12%).&rdquo;</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 3. PROBLEM STATEMENT ════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">3. Problem Statement</h2>
-  <div class="section-body">
-    <p>Despite extensive data collection by the Bureau of Transportation Statistics, extracting actionable pre-departure delay predictions remains challenging. Existing prediction systems either require real-time operational data unavailable to the public, or fail to enforce the temporal boundary between pre- and post-departure information, thereby producing misleading performance estimates.</p>
-    <p>This project addresses the following problem:</p>
     <div class="highlight-box"><strong>Given only information available 24 hours before a scheduled departure&mdash;airline, origin airport, destination airport, scheduled departure time, and aircraft tail number&mdash;can a machine learning model accurately predict whether the flight will arrive 15 or more minutes late?</strong></div>
-    <p>The task is formulated as a supervised binary classification problem:</p>
+    <p>The task is a supervised binary classification problem:</p>
     <ul>
       <li><strong>Label:</strong> <code>y = 1</code> if arrival delay &ge; 15 minutes; <code>y = 0</code> otherwise</li>
-      <li><strong>Positive class (~20%):</strong> Delayed flights (minority class)</li>
-      <li><strong>Negative class (~80%):</strong> On-time flights (majority class)</li>
+      <li><strong>Positive class (~20%):</strong> Delayed &nbsp;|&nbsp; <strong>Negative class (~80%):</strong> On-time</li>
     </ul>
-    <p>Beyond raw accuracy, the model must satisfy four domain-specific requirements:</p>
+    <p>The model must satisfy four domain-specific requirements:</p>
     <ol>
-      <li><strong>Strict temporal leakage prevention:</strong> A blacklist of 14 post-departure columns (26 including case variants) is enforced at data loading time. A SHAP-based sanity check further verifies that no single feature contributes more than 40% of total importance.</li>
-      <li><strong>Appropriate evaluation for class imbalance:</strong> With a ~20% positive rate, accuracy alone is misleading (a na&iuml;ve &ldquo;always on-time&rdquo; classifier achieves ~80%). PR-AUC, which focuses on the minority class, serves as the primary evaluation metric.</li>
-      <li><strong>Interpretable predictions:</strong> Each prediction must include the top contributing factors with signed SHAP impact values, enabling users to understand <em>why</em> a flight is predicted to be delayed.</li>
-      <li><strong>Temporal evaluation integrity:</strong> Training, validation, and test sets must be split chronologically&mdash;not randomly&mdash;to simulate real deployment where the model predicts future flights based on past data only.</li>
+      <li><strong>Strict temporal leakage prevention:</strong> A blacklist of 14 post-departure columns enforced at load time, plus a SHAP-based sanity check (no single feature &gt;40% total importance).</li>
+      <li><strong>Appropriate evaluation for class imbalance:</strong> PR-AUC as primary metric (a na&iuml;ve &ldquo;always on-time&rdquo; classifier achieves ~80% accuracy but is useless).</li>
+      <li><strong>Interpretable predictions:</strong> Per-prediction top contributing factors with signed SHAP values.</li>
+      <li><strong>Temporal evaluation integrity:</strong> Chronological train/val/test split&mdash;no random shuffling.</li>
     </ol>
   </div>
 </div>
 
-<!-- ═══════════════════ 4. OBJECTIVES ═══════════════════════ -->
+<!-- ═══════════════════ 3. LITERATURE REVIEW ════════════════ -->
 <div class="page-break">
-  <h2 class="section-title">4. Objectives</h2>
+  <h2 class="section-title">3. Literature Review</h2>
   <div class="section-body">
-    <h3>Primary Objective</h3>
-    <p>To develop, evaluate, and deploy a machine learning binary classification system that predicts flight arrival delays &ge;15 minutes using only pre-departure features, achieving a PR-AUC greater than 0.35 on a temporally held-out test set, with zero data leakage and per-prediction SHAP explanations.</p>
-    <h3>Secondary Objectives</h3>
-    <ol>
-      <li><strong>Data Pipeline:</strong> Build a robust data loading module that enforces a blacklist of 14 post-departure columns (26 including case variants), preventing temporal information leakage at the earliest stage.</li>
-      <li><strong>Temporal Splitting:</strong> Implement a calendar-based chronological split (Jan&ndash;Aug / Sep&ndash;Oct / Nov&ndash;Dec) with assertion guards that raise an error if date ranges overlap.</li>
-      <li><strong>Feature Engineering:</strong> Design a 17-feature pipeline comprising cyclic sin/cos encoding, Haversine great-circle distance (using 139 airport coordinates), K-Fold smoothed target encoding (&lambda;=20), historical delay rate aggregates (with minimum-sample thresholds of 30 and 100), and US federal holiday proximity flags (&plusmn;2 days).</li>
-      <li><strong>Model Training:</strong> Train a LightGBM gradient-boosted decision tree with up to 3,000 boosting rounds, early stopping (patience&nbsp;=&nbsp;100), and optional class-weight balancing.</li>
-      <li><strong>Hyperparameter Optimisation:</strong> Implement Optuna-based Bayesian optimisation (TPE sampler) over 9 hyperparameters with 50 trials, maximising validation PR-AUC.</li>
-      <li><strong>Comprehensive Evaluation:</strong> Report PR-AUC, ROC-AUC, F1-score, precision at 50% recall, recall at 80% precision, Brier score, and confusion matrix on the held-out November&ndash;December test set.</li>
-      <li><strong>SHAP Interpretability:</strong> Generate global feature importance (beeswarm and bar plots), per-prediction top-5 factor explanations, and partial dependence plots for the top 3 features.</li>
-      <li><strong>Leakage Audit:</strong> Implement a three-stage audit&mdash;blacklist check, high-correlation scan (|r|&nbsp;&gt;&nbsp;0.95 threshold), and SHAP importance sanity check (&gt;40% single-feature threshold)&mdash;run on every training cycle.</li>
-      <li><strong>REST API:</strong> Deploy the model as a FastAPI backend with <code>POST /predict</code> and <code>GET /health</code> endpoints, Pydantic v2 request validation, CORS support, and request-logging middleware.</li>
-      <li><strong>Interactive Frontend:</strong> Build a React 18 + Vite + Tailwind CSS single-page application with a flight input form, probability gauge meter (Recharts), SHAP factor chart, loading skeleton, error toast, and dark mode.</li>
-      <li><strong>Docker Deployment:</strong> Containerise both backend and frontend with Docker Compose, including health checks, read-only artifact volumes, and a shared bridge network.</li>
-    </ol>
+    <p><strong>Rebollo &amp; Balakrishnan (2014)</strong> applied Random Forests to U.S. airport departure delays, demonstrating that tree-based ensembles outperform linear models by capturing non-linear interactions between weather, traffic, and temporal features.</p>
+    <p><strong>Kim et al. (2016)</strong> compared Logistic Regression, SVM, Random Forest, and Gradient Boosting on BTS data, finding Gradient Boosting consistently achieved the highest AUC. They emphasised the critical importance of removing post-departure features to avoid information leakage.</p>
+    <p><strong>Ke et al. (2017)</strong> introduced LightGBM, a gradient-boosting framework using histogram-based splitting and leaf-wise growth, achieving state-of-the-art tabular performance while training 10&ndash;20&times; faster than traditional GBDT implementations.</p>
+    <p><strong>Akiba et al. (2019)</strong> introduced Optuna, a hyperparameter optimisation framework using Tree-structured Parzen Estimators (TPE) that converges to near-optimal configurations in 30&ndash;50 trials on typical search spaces.</p>
+    <p><strong>Lundberg &amp; Lee (2017)</strong> introduced SHAP, providing a theoretically grounded framework for feature attribution. TreeSHAP computes exact Shapley values in polynomial time for tree models, enabling per-prediction explanations at production speed.</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 5. LITERATURE REVIEW ════════════════ -->
+<!-- ═══════════════════ 4. DATASET DESCRIPTION ══════════════ -->
 <div class="page-break">
-  <h2 class="section-title">5. Literature Review</h2>
+  <h2 class="section-title">4. Dataset Description</h2>
   <div class="section-body">
-    <p>Research on flight delay prediction has evolved significantly over the past two decades, progressing from simple statistical models to sophisticated ensemble methods and interpretable AI.</p>
-    <p><strong>Rebollo and Balakrishnan (2014)</strong> applied Random Forests to predict departure delays at major U.S. airports, demonstrating that tree-based ensembles outperform linear models by capturing non-linear interactions between weather, traffic, and temporal features. Their work highlighted the importance of temporal features (hour-of-day, day-of-week) as primary predictors of delay.</p>
-    <p><strong>Mueller and Chatterji (2002)</strong> established the foundational understanding of delay propagation in air traffic networks, showing that delays cascade through connected flights in a hub-and-spoke system. This insight motivated the inclusion of historical route-level and airline-level delay rates as features in the present work.</p>
-    <p><strong>Kim et al. (2016)</strong> compared multiple classification algorithms&mdash;Logistic Regression, SVM, Random Forest, and Gradient Boosting&mdash;on BTS data and found that Gradient Boosting consistently achieved the highest AUC scores. Critically, their work also emphasised the importance of removing post-departure features to avoid information leakage.</p>
-    <p><strong>Ke et al. (2017)</strong> introduced LightGBM, a gradient-boosting framework that uses histogram-based splitting and leaf-wise tree growth. LightGBM achieves state-of-the-art performance on tabular data while training 10&ndash;20&times; faster than traditional GBDT implementations, making it practical for large-scale flight datasets containing millions of records.</p>
-    <p><strong>Akiba et al. (2019)</strong> introduced Optuna, a hyperparameter optimisation framework using Tree-structured Parzen Estimators (TPE). TPE models the conditional probability of promising hyperparameter configurations and samples preferentially from high-performing regions, converging to near-optimal configurations in 30&ndash;50 trials on typical 10-dimensional search spaces.</p>
-    <p><strong>Lundberg and Lee (2017)</strong> introduced SHAP (SHapley Additive exPlanations), providing a unified framework for feature attribution grounded in cooperative game theory. For tree-based models, their TreeSHAP algorithm computes exact Shapley values in polynomial time, enabling per-prediction explanations at production speed.</p>
-    <p><strong>Choi et al. (2016)</strong> demonstrated that feature engineering&mdash;specifically cyclic encoding of temporal variables&mdash;significantly improves delay prediction accuracy. Cyclic sin/cos encoding preserves the circular nature of time (i.e., 23:59 is temporally adjacent to 00:01), which standard ordinal encoding misrepresents.</p>
-    <p><strong>Hensman and Masko (2015)</strong> investigated temporal train/test splitting for time-dependent prediction tasks, demonstrating that random shuffled splits produce optimistically biased performance estimates. For flight delay prediction, where patterns evolve seasonally and are influenced by non-stationary factors, temporal splitting is essential for honest model evaluation.</p>
-  </div>
-</div>
+    <h3>4.1 Source &amp; Scale</h3>
+    <p>The <strong>BTS On-Time Performance</strong> dataset from the U.S. Bureau of Transportation Statistics covers all U.S. carriers with &ge;0.5% of domestic passenger revenue. A typical full-year dataset contains ~6&ndash;7 million flight records across 15+ carriers and 300+ airports. Available at <code>https://www.transtats.bts.gov/</code>.</p>
 
-<!-- ═══════════════════ 6. DATASET DESCRIPTION ══════════════ -->
-<div class="page-break">
-  <h2 class="section-title">6. Dataset Description</h2>
-  <div class="section-body">
-    <h3>6.1 Data Source</h3>
-    <p>The dataset used is the <strong>BTS On-Time Performance</strong> dataset from the U.S. Bureau of Transportation Statistics, maintained by the Department of Transportation. This is the authoritative source for U.S. domestic flight performance data, covering all carriers with at least 0.5% of domestic scheduled-service passenger revenue. It is publicly available at <code>https://www.transtats.bts.gov/</code>.</p>
-
-    <h3>6.2 Required Fields</h3>
-    <table>
+    <h3>4.2 Required Fields</h3>
+    <table class="compact">
       <tr><th>Column</th><th>Type</th><th>Description</th></tr>
       <tr><td><code>FL_DATE</code></td><td>date</td><td>Flight date (YYYY-MM-DD)</td></tr>
-      <tr><td><code>OP_CARRIER</code></td><td>string</td><td>IATA airline code (e.g., &ldquo;AA&rdquo;, &ldquo;DL&rdquo;, &ldquo;UA&rdquo;)</td></tr>
-      <tr><td><code>ORIGIN</code></td><td>string</td><td>Origin airport IATA code (e.g., &ldquo;JFK&rdquo;)</td></tr>
-      <tr><td><code>DEST</code></td><td>string</td><td>Destination airport IATA code (e.g., &ldquo;LAX&rdquo;)</td></tr>
-      <tr><td><code>CRS_DEP_TIME</code></td><td>integer</td><td>Scheduled departure time as HHMM (e.g., 1430 = 2:30 PM)</td></tr>
-      <tr><td><code>CRS_ARR_TIME</code></td><td>integer</td><td>Scheduled arrival time as HHMM</td></tr>
-      <tr><td><code>CRS_ELAPSED_TIME</code></td><td>float</td><td>Scheduled flight duration in minutes</td></tr>
-      <tr><td><code>ArrDelay</code></td><td>float</td><td>Arrival delay in minutes (negative values indicate early arrival)</td></tr>
-      <tr><td><code>TAIL_NUM</code></td><td>string</td><td>Aircraft tail number (e.g., &ldquo;N123AA&rdquo;)</td></tr>
-      <tr><td><code>DISTANCE</code></td><td>float</td><td>Route distance in statute miles</td></tr>
-      <tr><td><code>Month</code></td><td>integer</td><td>Calendar month (1&ndash;12)</td></tr>
-      <tr><td><code>DayOfWeek</code></td><td>integer</td><td>ISO day of week (1 = Monday, 7 = Sunday)</td></tr>
+      <tr><td><code>OP_CARRIER</code></td><td>string</td><td>IATA airline code (e.g., &ldquo;AA&rdquo;, &ldquo;DL&rdquo;)</td></tr>
+      <tr><td><code>ORIGIN</code>, <code>DEST</code></td><td>string</td><td>Airport IATA codes</td></tr>
+      <tr><td><code>CRS_DEP_TIME</code></td><td>integer</td><td>Scheduled departure (HHMM format)</td></tr>
+      <tr><td><code>CRS_ELAPSED_TIME</code></td><td>float</td><td>Scheduled duration (minutes)</td></tr>
+      <tr><td><code>DISTANCE</code></td><td>float</td><td>Route distance (statute miles)</td></tr>
+      <tr><td><code>ArrDelay</code></td><td>float</td><td>Arrival delay in minutes</td></tr>
+      <tr><td><code>TAIL_NUM</code></td><td>string</td><td>Aircraft tail number</td></tr>
+      <tr><td><code>Month</code>, <code>DayOfWeek</code></td><td>integer</td><td>Calendar month / ISO day of week</td></tr>
     </table>
 
-    <h3>6.3 Dataset Scale</h3>
-    <p>A typical full-year BTS dataset contains approximately 6&ndash;7 million flight records across 15+ carriers and 300+ airports. The 2023 dataset used for this project represents one of the most comprehensive publicly available sources of flight performance data.</p>
-
-    <h3>6.4 Target Variable</h3>
+    <h3>4.3 Target Variable</h3>
     <div class="formula-box">
       <strong>y</strong> = 1 &nbsp;if ArrDelay &ge; 15 minutes &nbsp;(Delayed)&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
       <strong>y</strong> = 0 &nbsp;otherwise &nbsp;(On-time)
     </div>
-    <p>The 15-minute threshold aligns with the DOT&rsquo;s official definition. The positive class (delayed) represents approximately 20% of all flights, creating a moderately imbalanced classification problem.</p>
 
-    <h3>6.5 Blacklisted Columns (14 Unique, 26 Including Case Variants)</h3>
-    <p>The following columns are <strong>strictly forbidden</strong> from the feature set because they contain information that is unavailable 24 hours before departure:</p>
+    <h3>4.4 Blacklisted Columns (14 Unique, 26 Including Case Variants)</h3>
     <table class="compact">
-      <tr><th>Blacklisted Column</th><th>Reason for Exclusion</th></tr>
+      <tr><th>Blacklisted Column</th><th>Reason</th></tr>
       <tr><td><code>TaxiOut</code>, <code>TaxiIn</code></td><td>Only known after pushback / landing</td></tr>
       <tr><td><code>WheelsOff</code>, <code>WheelsOn</code></td><td>Actual takeoff / landing times</td></tr>
       <tr><td><code>ActualElapsedTime</code>, <code>AirTime</code></td><td>Only computable post-flight</td></tr>
-      <tr><td><code>CarrierDelay</code>, <code>WeatherDelay</code></td><td>Post-flight delay attribution</td></tr>
-      <tr><td><code>NASDelay</code>, <code>SecurityDelay</code></td><td>Post-flight delay attribution</td></tr>
-      <tr><td><code>LateAircraftDelay</code></td><td>Post-flight delay attribution</td></tr>
+      <tr><td><code>CarrierDelay</code>, <code>WeatherDelay</code>, <code>NASDelay</code>, <code>SecurityDelay</code>, <code>LateAircraftDelay</code></td><td>Post-flight delay attribution</td></tr>
       <tr><td><code>DiversionDistance</code></td><td>Only applies to diverted flights</td></tr>
-      <tr><td><code>ActualDeparture</code>, <code>ActualArrival</code></td><td>Actual times (post-departure)</td></tr>
+      <tr><td><code>ActualDeparture</code>, <code>ActualArrival</code></td><td>Post-departure times</td></tr>
     </table>
-    <p>Both camelCase and UPPER_CASE variants are checked (26 total strings), ensuring that no BTS column-naming variation bypasses the blacklist.</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 7. DATA PREPROCESSING ═══════════════ -->
+<!-- ═══════════════════ 5. PREPROCESSING & SPLITTING ════════ -->
 <div class="page-break">
-  <h2 class="section-title">7. Data Preprocessing</h2>
+  <h2 class="section-title">5. Data Preprocessing &amp; Temporal Splitting</h2>
   <div class="section-body">
-    <h3>7.1 Loading and Cleaning</h3>
-    <p>The <code>load_raw()</code> function in <code>src/data/loader.py</code> handles initial data ingestion in six steps:</p>
-    <ol>
-      <li><strong>Format detection:</strong> Accepts both CSV and Parquet formats. BTS data is typically downloaded as CSV; Parquet is used for intermediate cached files.</li>
-      <li><strong>Column standardisation:</strong> BTS column names vary between download sessions (e.g., <code>ARR_DELAY</code> vs. <code>ArrDelay</code>). The loader maps 10 known variants to canonical names automatically.</li>
-      <li><strong>Blacklist enforcement:</strong> All 26 blacklisted column strings (14 unique columns &times; 2 case variants) are immediately dropped. A warning is logged if any were present.</li>
-      <li><strong>Target creation:</strong> The binary label is created as <code>y = (ArrDelay &ge; 15).astype(np.int8)</code>. If the BTS pre-computed indicator column <code>ArrDel15</code> is available, it is used directly.</li>
-      <li><strong>Cancelled/diverted removal:</strong> Rows with null <code>ArrDelay</code> (cancelled or diverted flights) are dropped, as they have no meaningful delay to predict.</li>
-      <li><strong>Chronological sorting:</strong> The output DataFrame is sorted by <code>FL_DATE</code> for downstream temporal splitting.</li>
-    </ol>
-    <div class="highlight-box">Refer to notebook <strong>01_eda.ipynb</strong> for raw data loading output, shape, dtypes, class distribution, and blacklisted column removal.</div>
-    <p class="figure-caption">Data loading output showing dataset shape and class distribution</p>
+    <h3>5.1 Loading Pipeline</h3>
+    <p>The <code>load_raw()</code> function accepts CSV/Parquet, standardises BTS column name variants, enforces the 26-string blacklist (14 columns &times; 2 case variants), creates the binary label, drops cancelled/diverted rows (null <code>ArrDelay</code>), and sorts chronologically by <code>FL_DATE</code>.</p>
 
-    <h3>7.2 Multiple File Concatenation</h3>
-    <p>The <code>load_multiple()</code> function concatenates monthly BTS files into a single sorted DataFrame, enabling seamless processing of datasets downloaded in monthly batches.</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 8. TEMPORAL SPLITTING ═══════════════ -->
-<div class="page-break">
-  <h2 class="section-title">8. Temporal Train&ndash;Validation&ndash;Test Splitting</h2>
-  <div class="section-body">
-    <h3>8.1 Rationale</h3>
-    <p>Unlike datasets with independent, identically distributed observations, flight delay data is inherently temporal. A random shuffled split would allow the model to &ldquo;see&rdquo; December flights during training and then be &ldquo;tested&rdquo; on July flights&mdash;a scenario that never occurs in real deployment, where the model must predict future flights from past data only. Temporal splitting simulates this real-world deployment condition.</p>
-
-    <h3>8.2 Split Strategy</h3>
+    <h3>5.2 Temporal Split Strategy</h3>
     <table>
       <tr><th>Split</th><th>Months</th><th>Approx. Size</th><th>Purpose</th></tr>
-      <tr><td><strong>Train</strong></td><td>January&ndash;August (months 1&ndash;8)</td><td>~70%</td><td>Model learning</td></tr>
-      <tr><td><strong>Validation</strong></td><td>September&ndash;October (months 9&ndash;10)</td><td>~15%</td><td>Hyperparameter tuning, threshold selection</td></tr>
-      <tr><td><strong>Test</strong></td><td>November&ndash;December (months 11&ndash;12)</td><td>~15%</td><td>Final held-out evaluation</td></tr>
+      <tr><td><strong>Train</strong></td><td>January&ndash;August (1&ndash;8)</td><td>~70%</td><td>Model learning</td></tr>
+      <tr><td><strong>Validation</strong></td><td>September&ndash;October (9&ndash;10)</td><td>~15%</td><td>Hyperparameter tuning, threshold selection</td></tr>
+      <tr><td><strong>Test</strong></td><td>November&ndash;December (11&ndash;12)</td><td>~15%</td><td>Final held-out evaluation</td></tr>
     </table>
-
-    <h3>8.3 Integrity Guards</h3>
-    <p>The <code>temporal_split()</code> function enforces strict chronological ordering with runtime assertions:</p>
+    <p>Unlike random splits, temporal splitting simulates real deployment where the model only predicts future flights from past data. Runtime assertions enforce strict chronological ordering:</p>
     <pre><code>assert max(train_dates) &lt; min(val_dates),   "Train/val date overlap detected"
 assert max(val_dates)   &lt; min(test_dates),  "Val/test date overlap detected"</code></pre>
-    <p>If these assertions fail (e.g., due to multi-year data without filtering), a <code>ValueError</code> is raised, preventing subtle leakage from overlapping date ranges.</p>
-
-    <h3>8.4 Statistics Reporting</h3>
-    <p>The <code>get_split_stats()</code> function returns per-split statistics&mdash;row count, number delayed, number on-time, and delay rate&mdash;enabling verification that class distributions remain consistent across splits.</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 9. EDA ══════════════════════════════ -->
+<!-- ═══════════════════ 6. FEATURE ENGINEERING ═════════════ -->
 <div class="page-break">
-  <h2 class="section-title">9. Exploratory Data Analysis</h2>
+  <h2 class="section-title">6. Feature Engineering</h2>
   <div class="section-body">
-    <p>Exploratory data analysis is conducted in <code>notebooks/01_eda.ipynb</code> to understand the dataset before modelling.</p>
+    <p>The <code>FeaturePipeline</code> class in <code>src/features/pipeline.py</code> transforms raw flight records into 17 predictive features through five sequential stages.</p>
 
-    <h3>9.1 Class Distribution</h3>
-    <p>Approximately 20% of flights are delayed (y=1) and 80% are on-time (y=0). This moderate imbalance means that accuracy alone is an insufficient evaluation metric&mdash;a na&iuml;ve &ldquo;always predict on-time&rdquo; model achieves ~80% accuracy while being completely useless.</p>
-    <div class="highlight-box">Refer to notebook <strong>01_eda.ipynb</strong> for class distribution visualisation (~80% On-Time, ~20% Delayed).</div>
-    <p class="figure-caption">Class distribution of the flight delay dataset</p>
-
-    <h3>9.2 Delay Rate by Departure Hour</h3>
-    <p>The lowest delay rates occur during early morning departures (5&ndash;8 AM). Delay rates increase steadily throughout the day, peaking between 6&ndash;9 PM. This pattern reflects accumulated delays propagating through the network: aircraft that arrive late in the morning cause cascading delays for subsequent afternoon and evening flights.</p>
-    <div class="highlight-box">Refer to notebook <strong>01_eda.ipynb</strong> for hourly delay rate distribution (24 hours).</div>
-    <p class="figure-caption">Delay rate by departure hour of day</p>
-
-    <h3>9.3 Delay Rate by Month</h3>
-    <p>Summer months (June&ndash;August) show elevated delay rates due to thunderstorm season. December shows high delay rates due to winter weather and holiday travel volume. February&ndash;April typically exhibit the lowest delay rates.</p>
-    <div class="highlight-box">Refer to notebook <strong>01_eda.ipynb</strong> for monthly delay rate and flight volume trends.</div>
-    <p class="figure-caption">Monthly delay rate and flight volume</p>
-
-    <h3>9.4 Airline-Level Variation</h3>
-    <p>Delay rates vary significantly across carriers, ranging from approximately 15% for the best-performing airlines to approximately 30% for the worst. This carrier-level signal motivates the inclusion of both the <code>airline_delay_rate</code> aggregate and the target-encoded <code>OP_CARRIER_te</code> feature.</p>
-
-    <h3>9.5 Arrival Delay Distribution</h3>
-    <p>The raw <code>ArrDelay</code> distribution is right-skewed with a long tail. Most flights arrive within &plusmn;15 minutes of schedule. The 15-minute threshold captures a meaningful operational boundary&mdash;flights delayed by less than 15 minutes are still considered &ldquo;on time&rdquo; by DOT standards.</p>
-    <div class="highlight-box">Refer to notebook <strong>01_eda.ipynb</strong> for arrival delay distribution histogram with 15-minute threshold.</div>
-    <p class="figure-caption">Distribution of arrival delay in minutes</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 10. FEATURE ENGINEERING ═════════════ -->
-<div class="page-break">
-  <h2 class="section-title">10. Feature Engineering</h2>
-  <div class="section-body">
-    <p>Feature engineering transforms raw flight record columns into 17 predictive features, implemented in <code>src/features/pipeline.py</code>. The <code>FeaturePipeline</code> class orchestrates five sequential stages.</p>
-
-    <h3>10.1 Stage 1&mdash;Cyclic Temporal Encoding</h3>
-    <p>Raw time variables (departure time, day-of-week, month) are inherently circular: 23:59 is temporally adjacent to 00:01, but numerically distant (1439 vs. 0 in minutes). Standard ordinal encoding misrepresents this relationship. Sin/cos encoding maps each value to a point on the unit circle, preserving circular proximity:</p>
+    <h3>6.1 Cyclic Temporal Encoding</h3>
+    <p>Raw time variables are inherently circular (23:59 is adjacent to 00:01). Sin/cos encoding maps each value to the unit circle:</p>
     <div class="formula-box">
       x<sub>sin</sub> = sin(2&pi; &middot; t / T) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       x<sub>cos</sub> = cos(2&pi; &middot; t / T)
     </div>
     <table class="compact">
-      <tr><th>Output Features</th><th>Input Variable</th><th>Period (T)</th></tr>
-      <tr><td><code>CRS_DEP_TIME_sin</code>, <code>CRS_DEP_TIME_cos</code></td><td>Minutes since midnight (0&ndash;1439)</td><td>1440</td></tr>
-      <tr><td><code>DayOfWeek_sin</code>, <code>DayOfWeek_cos</code></td><td>Day of week (1&ndash;7)</td><td>7</td></tr>
-      <tr><td><code>Month_sin</code>, <code>Month_cos</code></td><td>Month (1&ndash;12)</td><td>12</td></tr>
-      <tr><td><code>departure_hour</code></td><td>Hour extracted (0&ndash;23)</td><td>&mdash; (ordinal)</td></tr>
+      <tr><th>Output Features</th><th>Input</th><th>Period (T)</th></tr>
+      <tr><td><code>CRS_DEP_TIME_sin/cos</code></td><td>Minutes since midnight</td><td>1440</td></tr>
+      <tr><td><code>DayOfWeek_sin/cos</code></td><td>Day of week (1&ndash;7)</td><td>7</td></tr>
+      <tr><td><code>Month_sin/cos</code></td><td>Month (1&ndash;12)</td><td>12</td></tr>
+      <tr><td><code>departure_hour</code></td><td>Hour (0&ndash;23)</td><td>&mdash; (ordinal)</td></tr>
     </table>
-    <p><strong>Implementation detail:</strong> HHMM integers are converted to minutes since midnight via <code>hours = hhmm // 100</code>, <code>minutes = hhmm % 100</code>, <code>total = hours &times; 60 + minutes</code>. Out-of-range values are clamped to [0, 1439].</p>
-    <div class="highlight-box">Refer to notebook <strong>02_feature_engineering.ipynb</strong> for cyclic encoding scatter plots (departure time, day of week, month).</div>
-    <p class="figure-caption">Cyclic sin/cos encoding visualisation for temporal features</p>
 
-    <h3>10.2 Stage 2&mdash;Haversine Great-Circle Route Distance</h3>
-    <p>Route distance captures the physical length of the flight path, which correlates with delay patterns. The Haversine formula computes the great-circle distance between two points on a sphere:</p>
+    <h3>6.2 Haversine Great-Circle Route Distance</h3>
     <div class="formula-box">
       a = sin&sup2;(&Delta;lat / 2) + cos(lat<sub>1</sub>) &middot; cos(lat<sub>2</sub>) &middot; sin&sup2;(&Delta;lon / 2)<br>
       distance = 2 &times; R &times; arcsin(&radic;a) &nbsp;&nbsp;&nbsp; where R = 6,371.0088&nbsp;km
     </div>
-    <p>The implementation is fully vectorised using NumPy for performance on millions of rows. Airport coordinates for <strong>139 major U.S. airports</strong> (e.g., ATL, LAX, ORD, DFW, JFK) are stored in a lookup dictionary within <code>src/features/geospatial.py</code>.</p>
-    <p><strong>Fallback strategy:</strong></p>
-    <ol>
-      <li>If both airports have known coordinates &rarr; Haversine distance in kilometres</li>
-      <li>If one or both coordinates are missing &rarr; <code>DISTANCE (statute miles) &times; 1.60934</code></li>
-      <li>If neither is available &rarr; <code>NaN</code> (handled natively by LightGBM)</li>
-    </ol>
-    <div class="highlight-box">Refer to notebook <strong>02_feature_engineering.ipynb</strong> for route distance distribution histogram.</div>
-    <p class="figure-caption">Distribution of computed route distances in kilometres</p>
+    <p>Vectorised NumPy implementation using coordinates for <strong>139 major U.S. airports</strong>. Fallback: BTS <code>DISTANCE</code> &times; 1.60934 km if coordinates are missing; <code>NaN</code> (handled natively by LightGBM) if neither is available.</p>
 
-    <h3>10.3 Stage 3&mdash;Historical Delay Rate Aggregates</h3>
-    <p>Historical delay rates capture systemic patterns: certain routes and airlines consistently experience higher delay rates due to structural factors (hub congestion, equipment allocation, geographic weather exposure).</p>
-    <h4>Route Delay Rate (minimum 30 flights)</h4>
+    <h3>6.3 Historical Delay Rate Aggregates</h3>
+    <h4>Route Delay Rate (min. 30 flights)</h4>
     <div class="formula-box">
       w = min(n, 30) / 30 &nbsp;&nbsp;&nbsp;&nbsp;
       route_delay_rate = w &middot; (n<sub>delayed</sub> + 1) / (n<sub>total</sub> + 2) + (1 &minus; w) &middot; p<sub>global</sub>
     </div>
-    <h4>Airline Delay Rate (minimum 100 flights)</h4>
+    <h4>Airline Delay Rate (min. 100 flights)</h4>
     <div class="formula-box">
       w = min(n, 100) / 100 &nbsp;&nbsp;&nbsp;&nbsp;
       airline_delay_rate = w &middot; (n<sub>delayed</sub> + 1) / (n<sub>total</sub> + 2) + (1 &minus; w) &middot; p<sub>global</sub>
     </div>
-    <p>Routes or airlines with fewer flights than the minimum threshold are smoothed toward the global average via the blending weight <em>w</em>. Laplace smoothing (+1 / +2) prevents zero/one extreme rates. Both rates are computed on training data only and applied to validation/test sets via lookup, preventing target leakage.</p>
+    <p>Laplace smoothing (+1 / +2) prevents extreme rates. Both computed on training data only; applied to val/test via lookup.</p>
 
-    <h3>10.4 Stage 4&mdash;K-Fold Smoothed Target Encoding</h3>
-    <p>High-cardinality categorical features&mdash;ORIGIN (300+ airports), DEST (300+ airports), TAIL_NUM (5,000+ aircraft)&mdash;cannot be one-hot encoded without extreme dimensionality. Target encoding maps each category to the mean target value (delay rate) of that category, producing a single informative numeric feature per column.</p>
-    <p><strong>Leakage prevention via K-Fold out-of-fold encoding:</strong></p>
-    <ol>
-      <li>Split training data into K=5 folds (<code>shuffle=False</code> to preserve temporal order)</li>
-      <li>For each fold: compute category means on the remaining 4 folds; apply to the held-out fold</li>
-      <li>Each training row&rsquo;s encoding is derived only from data that does <em>not</em> include itself</li>
-    </ol>
-    <p><strong>Smoothing regularisation:</strong></p>
+    <h3>6.4 K-Fold Smoothed Target Encoding</h3>
+    <p>High-cardinality categoricals (ORIGIN: 300+ airports, TAIL_NUM: 5,000+ aircraft) are target-encoded with K=5 out-of-fold encoding to prevent target leakage:</p>
     <div class="formula-box">
       TE(category) = (n &middot; p<sub>category</sub> + &lambda; &middot; p<sub>global</sub>) / (n + &lambda;)
       &nbsp;&nbsp;&nbsp; where &lambda; = 20.0
     </div>
-    <p>Categories with small sample sizes (n &lt;&lt; &lambda;) shrink toward the global mean, preventing overfitting on rare airports or aircraft. Unseen categories at inference time receive the global mean as a fallback.</p>
-    <p><strong>Columns encoded:</strong> <code>OP_CARRIER</code> &rarr; <code>OP_CARRIER_te</code>, <code>ORIGIN</code> &rarr; <code>ORIGIN_te</code>, <code>DEST</code> &rarr; <code>DEST_te</code>, <code>TAIL_NUM</code> &rarr; <code>TAIL_NUM_te</code>.</p>
+    <p>Columns encoded: <code>OP_CARRIER</code> &rarr; <code>OP_CARRIER_te</code>, <code>ORIGIN</code> &rarr; <code>ORIGIN_te</code>, <code>DEST</code> &rarr; <code>DEST_te</code>, <code>TAIL_NUM</code> &rarr; <code>TAIL_NUM_te</code>. Unseen categories at inference receive the global mean.</p>
 
-    <h3>10.5 Stage 5&mdash;Holiday Proximity</h3>
-    <p>Flights near major US holidays experience elevated delay rates due to increased passenger volume, seasonal weather, and operational strain. Ten US federal holidays are detected (4 fixed-date + 6 variable-date):</p>
-    <ul>
-      <li><strong>Fixed:</strong> New Year&rsquo;s Day (1 Jan), Independence Day (4 Jul), Veterans Day (11 Nov), Christmas Day (25 Dec)</li>
-      <li><strong>Variable:</strong> MLK Day (3rd Monday in Jan), Presidents&rsquo; Day (3rd Monday in Feb), Memorial Day (last Monday in May), Labor Day (1st Monday in Sep), Columbus Day (2nd Monday in Oct), Thanksgiving (4th Thursday in Nov)</li>
-    </ul>
+    <h3>6.5 Holiday Proximity</h3>
     <div class="formula-box">
       <code>is_near_holiday</code> = 1 &nbsp;if min(|flight_date &minus; holiday_date|) &le; 2 days, &nbsp;else 0
     </div>
-    <p>Implementation uses chunked vectorised broadcasting (50,000 rows per chunk) for memory efficiency on large datasets.</p>
+    <p>Ten U.S. federal holidays detected (4 fixed-date + 6 variable-date). Vectorised with chunked broadcasting (50k rows/chunk).</p>
 
-    <h3>10.6 Complete Feature Set (17 Features)</h3>
+    <h3>6.6 Complete Feature Set (17 Features)</h3>
     <table class="compact no-break">
-      <tr><th>#</th><th>Feature Name</th><th>Type</th><th>Engineering Stage</th></tr>
-      <tr><td>1</td><td><code>CRS_DEP_TIME_sin</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>2</td><td><code>CRS_DEP_TIME_cos</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>3</td><td><code>DayOfWeek_sin</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>4</td><td><code>DayOfWeek_cos</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>5</td><td><code>Month_sin</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>6</td><td><code>Month_cos</code></td><td>float</td><td>Cyclic encoding (Stage 1)</td></tr>
-      <tr><td>7</td><td><code>departure_hour</code></td><td>int</td><td>Extracted hour (Stage 1)</td></tr>
-      <tr><td>8</td><td><code>route_distance_km</code></td><td>float</td><td>Haversine / fallback (Stage 2)</td></tr>
-      <tr><td>9</td><td><code>DISTANCE</code></td><td>float</td><td>Raw BTS column (statute miles)</td></tr>
-      <tr><td>10</td><td><code>CRS_ELAPSED_TIME</code></td><td>float</td><td>Raw BTS column (minutes)</td></tr>
-      <tr><td>11</td><td><code>OP_CARRIER_te</code></td><td>float</td><td>Target-encoded airline (Stage 4)</td></tr>
-      <tr><td>12</td><td><code>ORIGIN_te</code></td><td>float</td><td>Target-encoded origin (Stage 4)</td></tr>
-      <tr><td>13</td><td><code>DEST_te</code></td><td>float</td><td>Target-encoded destination (Stage 4)</td></tr>
-      <tr><td>14</td><td><code>TAIL_NUM_te</code></td><td>float</td><td>Target-encoded tail number (Stage 4)</td></tr>
-      <tr><td>15</td><td><code>route_delay_rate</code></td><td>float</td><td>Smoothed historical (Stage 3)</td></tr>
-      <tr><td>16</td><td><code>airline_delay_rate</code></td><td>float</td><td>Smoothed historical (Stage 3)</td></tr>
-      <tr><td>17</td><td><code>is_near_holiday</code></td><td>int</td><td>Binary flag &plusmn;2 days (Stage 5)</td></tr>
+      <tr><th>#</th><th>Feature</th><th>Stage</th></tr>
+      <tr><td>1&ndash;2</td><td><code>CRS_DEP_TIME_sin/cos</code></td><td>Cyclic encoding</td></tr>
+      <tr><td>3&ndash;4</td><td><code>DayOfWeek_sin/cos</code></td><td>Cyclic encoding</td></tr>
+      <tr><td>5&ndash;6</td><td><code>Month_sin/cos</code></td><td>Cyclic encoding</td></tr>
+      <tr><td>7</td><td><code>departure_hour</code></td><td>Extracted hour</td></tr>
+      <tr><td>8</td><td><code>route_distance_km</code></td><td>Haversine / fallback</td></tr>
+      <tr><td>9</td><td><code>DISTANCE</code></td><td>Raw BTS (statute miles)</td></tr>
+      <tr><td>10</td><td><code>CRS_ELAPSED_TIME</code></td><td>Raw BTS (minutes)</td></tr>
+      <tr><td>11&ndash;14</td><td><code>OP_CARRIER_te</code>, <code>ORIGIN_te</code>, <code>DEST_te</code>, <code>TAIL_NUM_te</code></td><td>Target encoding</td></tr>
+      <tr><td>15&ndash;16</td><td><code>route_delay_rate</code>, <code>airline_delay_rate</code></td><td>Historical aggregates</td></tr>
+      <tr><td>17</td><td><code>is_near_holiday</code></td><td>Holiday flag</td></tr>
     </table>
-
-    <h3>10.7 Pipeline Persistence</h3>
-    <p>The <code>FeaturePipeline</code> class supports serialisation via <strong>joblib</strong>:</p>
-    <ul>
-      <li><code>save(dir_path)</code> &rarr; writes <code>pipeline.pkl</code> and <code>target_encoder.pkl</code></li>
-      <li><code>FeaturePipeline.load(dir_path)</code> &rarr; restores a fitted pipeline for production inference</li>
-    </ul>
   </div>
 </div>
 
-<!-- ═══════════════════ 11. LIGHTGBM ═══════════════════════ -->
+<!-- ═══════════════════ 7. LIGHTGBM & OPTUNA ═══════════════ -->
 <div class="page-break">
-  <h2 class="section-title">11. Machine Learning Algorithm&mdash;LightGBM</h2>
+  <h2 class="section-title">7. LightGBM &amp; Hyperparameter Optimisation</h2>
   <div class="section-body">
-    <h3>11.1 Why LightGBM?</h3>
-    <table>
-      <tr><th>Criterion</th><th>LightGBM Advantage</th></tr>
-      <tr><td>Mixed feature types</td><td>Handles numeric and encoded categoricals natively without preprocessing</td></tr>
-      <tr><td>Missing values</td><td>Built-in NaN handling&mdash;assigns missing values to the best split direction</td></tr>
-      <tr><td>Training speed</td><td>Histogram-based splitting achieves 10&ndash;20&times; speedup over traditional GBDT</td></tr>
-      <tr><td>Class imbalance</td><td>Native <code>scale_pos_weight</code> parameter adjusts the loss function</td></tr>
-      <tr><td>Interpretability</td><td>Compatible with SHAP TreeExplainer for exact Shapley value computation</td></tr>
-      <tr><td>Regularisation</td><td>L1/L2 penalties, min_child_samples, feature/bagging fraction</td></tr>
+    <h3>7.1 Why LightGBM?</h3>
+    <table class="compact">
+      <tr><th>Criterion</th><th>Advantage</th></tr>
+      <tr><td>Mixed features</td><td>Handles numeric + encoded categoricals natively</td></tr>
+      <tr><td>Missing values</td><td>Built-in NaN handling (assigns to best split direction)</td></tr>
+      <tr><td>Speed</td><td>Histogram-based splitting: 10&ndash;20&times; faster than traditional GBDT</td></tr>
+      <tr><td>Imbalance</td><td>Native <code>scale_pos_weight</code></td></tr>
+      <tr><td>Interpretability</td><td>Compatible with SHAP TreeExplainer</td></tr>
     </table>
+    <p><strong>Key innovations:</strong> histogram-based splitting (255 bins), leaf-wise (best-first) growth, Gradient-based One-Side Sampling (GOSS), and Exclusive Feature Bundling (EFB).</p>
 
-    <h3>11.2 Algorithm Overview</h3>
-    <p>LightGBM (Light Gradient Boosting Machine), developed by Microsoft Research (Ke et al., 2017), is an ensemble of decision trees trained sequentially. Each new tree is fitted on the negative gradient (pseudo-residuals) of the binary cross-entropy loss with respect to the current ensemble&rsquo;s predictions.</p>
-    <p><strong>Key algorithmic innovations:</strong></p>
-    <ol>
-      <li><strong>Histogram-based splitting:</strong> Bins continuous features into 255 discrete buckets, reducing split-finding complexity from O(n &times; features) to O(bins &times; features)</li>
-      <li><strong>Leaf-wise (best-first) growth:</strong> Expands the leaf with the maximum delta loss, producing deeper and more accurate trees with fewer total splits compared to level-wise growth</li>
-      <li><strong>Gradient-based One-Side Sampling (GOSS):</strong> Retains all high-gradient (poorly predicted) samples while sub-sampling low-gradient samples, accelerating training without significant accuracy loss</li>
-      <li><strong>Exclusive Feature Bundling (EFB):</strong> Bundles mutually exclusive sparse features to reduce the effective number of features</li>
-    </ol>
+    <h3>7.2 Default Parameters</h3>
+    <pre><code>objective: binary    learning_rate: 0.03    num_leaves: 127
+max_depth: -1        min_child_samples: 50  feature_fraction: 0.8
+bagging_fraction: 0.8    bagging_freq: 5    lambda_l1: 0.1    lambda_l2: 1.0
+max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
 
-    <h3>11.3 Default Hyperparameters</h3>
-    <pre><code>objective:         binary          # binary cross-entropy loss
-metric:            auc             # ROC-AUC for early stopping
-learning_rate:     0.03            # shrinkage rate per tree
-num_leaves:        127             # max leaves per tree (controls complexity)
-max_depth:         -1              # unlimited (num_leaves controls depth)
-min_child_samples: 50              # min observations per leaf
-feature_fraction:  0.8             # 80% of features sampled per tree
-bagging_fraction:  0.8             # 80% of rows sampled per tree
-bagging_freq:      5               # re-sample every 5 iterations
-lambda_l1:         0.1             # L1 regularisation
-lambda_l2:         1.0             # L2 regularisation
-scale_pos_weight:  1.0             # default; adjustable via compute_class_weight()
-seed:              42              # reproducibility</code></pre>
-
-    <h3>11.4 Training Configuration</h3>
-    <ul>
-      <li><strong>Maximum boosting rounds:</strong> 3,000</li>
-      <li><strong>Early stopping patience:</strong> 100 rounds without validation AUC improvement &rarr; training terminates</li>
-      <li><strong>Class weight (optional):</strong> <code>scale_pos_weight = count(y=0) / count(y=1)</code>, computed by the helper function <code>compute_class_weight()</code> and passed via the <code>params</code> argument when desired</li>
-    </ul>
-  </div>
-</div>
-
-<!-- ═══════════════════ 12. OPTUNA ══════════════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">12. Hyperparameter Optimisation with Optuna</h2>
-  <div class="section-body">
-    <h3>12.1 Search Space</h3>
+    <h3>7.3 Optuna Bayesian Optimisation</h3>
     <table class="compact">
       <tr><th>Hyperparameter</th><th>Range</th><th>Scale</th></tr>
-      <tr><td><code>num_leaves</code></td><td>20&ndash;150</td><td>Integer (uniform)</td></tr>
-      <tr><td><code>max_depth</code></td><td>4&ndash;12</td><td>Integer (uniform)</td></tr>
-      <tr><td><code>min_child_samples</code></td><td>10&ndash;100</td><td>Integer (uniform)</td></tr>
-      <tr><td><code>feature_fraction</code></td><td>0.5&ndash;0.9</td><td>Continuous (uniform)</td></tr>
-      <tr><td><code>bagging_fraction</code></td><td>0.6&ndash;0.9</td><td>Continuous (uniform)</td></tr>
-      <tr><td><code>bagging_freq</code></td><td>1&ndash;10</td><td>Integer (uniform)</td></tr>
-      <tr><td><code>learning_rate</code></td><td>0.01&ndash;0.1</td><td>Continuous (<strong>log-uniform</strong>)</td></tr>
-      <tr><td><code>lambda_l1</code></td><td>0.0&ndash;5.0</td><td>Continuous (uniform)</td></tr>
-      <tr><td><code>lambda_l2</code></td><td>0.0&ndash;5.0</td><td>Continuous (uniform)</td></tr>
+      <tr><td><code>num_leaves</code></td><td>20&ndash;150</td><td>Integer</td></tr>
+      <tr><td><code>max_depth</code></td><td>4&ndash;12</td><td>Integer</td></tr>
+      <tr><td><code>min_child_samples</code></td><td>10&ndash;100</td><td>Integer</td></tr>
+      <tr><td><code>feature_fraction</code></td><td>0.5&ndash;0.9</td><td>Continuous</td></tr>
+      <tr><td><code>bagging_fraction</code></td><td>0.6&ndash;0.9</td><td>Continuous</td></tr>
+      <tr><td><code>learning_rate</code></td><td>0.01&ndash;0.1</td><td><strong>Log-uniform</strong></td></tr>
+      <tr><td><code>lambda_l1</code>, <code>lambda_l2</code></td><td>0.0&ndash;5.0</td><td>Continuous</td></tr>
     </table>
-
-    <h3>12.2 Optimisation Protocol</h3>
-    <ul>
-      <li><strong>Sampler:</strong> <code>TPESampler(seed=42)</code>&mdash;Tree-structured Parzen Estimator</li>
-      <li><strong>Direction:</strong> Maximise</li>
-      <li><strong>Objective metric:</strong> PR-AUC (Average Precision Score) on the validation set</li>
-      <li><strong>Per-trial training:</strong> Up to 2,000 boosting rounds with early stopping (patience = 50)</li>
-      <li><strong>Default budget:</strong> 50 trials</li>
-      <li><strong>Output:</strong> <code>best_params.json</code> saved to the artifacts directory with the best PR-AUC score and corresponding hyperparameters</li>
-    </ul>
-
-    <h3>12.3 Why TPE over Grid or Random Search?</h3>
-    <p>TPE models the probability distribution of &ldquo;good&rdquo; hyperparameter configurations and samples preferentially from promising regions of the search space. On a 9-dimensional search space like the one above, TPE typically converges to near-optimal configurations in 30&ndash;50 trials, whereas random search may require hundreds to achieve comparable results.</p>
+    <p><strong>Protocol:</strong> TPESampler (seed=42), 50 trials, maximising validation PR-AUC. Per trial: up to 2,000 rounds with early stopping (patience=50).</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 13. TRAINING PROCESS ════════════════ -->
+<!-- ═══════════════════ 8. TRAINING PROCESS ════════════════ -->
 <div class="page-break">
-  <h2 class="section-title">13. Model Training Process</h2>
+  <h2 class="section-title">8. Model Training Process</h2>
   <div class="section-body">
-    <h3>13.1 End-to-End Data Flow</h3>
+    <h3>8.1 End-to-End Data Flow</h3>
     <pre><code>Raw BTS CSV
-  |-- load_raw()          --> cleaned DataFrame (blacklist enforced, y label created)
+  |-- load_raw()          --> cleaned DataFrame (blacklist enforced, y created)
   |-- temporal_split()    --> train (Jan-Aug), val (Sep-Oct), test (Nov-Dec)
   |
-  |-- FeaturePipeline.fit_transform(train)   --> X_train (17 features), y_train
-  |-- FeaturePipeline.transform(val)         --> X_val, y_val
-  |-- FeaturePipeline.transform(test)        --> X_test, y_test
+  |-- FeaturePipeline.fit_transform(train)   --> X_train (17 features)
+  |-- FeaturePipeline.transform(val/test)    --> X_val, X_test
   |
-  |-- train_lgbm(X_train, y_train, X_val, y_val)  --> trained LightGBM Booster
-  |-- save_model()        --> model_YYYYMMDD_HHMMSS.txt + params.json</code></pre>
+  |-- train_lgbm(X_train, y_train, X_val, y_val)  --> LightGBM Booster
+  |-- save_model()  --> model_YYYYMMDD_HHMMSS.txt + params.json</code></pre>
 
-    <h3>13.2 Training Steps</h3>
-    <ol>
-      <li><strong>Feature column extraction:</strong> <code>get_feature_cols(df)</code> returns the ordered list of 17 feature column names</li>
-      <li><strong>LightGBM Dataset creation:</strong> Training and validation data wrapped in <code>lgb.Dataset</code> objects</li>
-      <li><strong>Model training:</strong> <code>lgb.train()</code> with validation-based early stopping on AUC</li>
-      <li><strong>Threshold selection:</strong> Precision&ndash;recall curve computed on the validation set; the F1-maximising threshold is selected</li>
-      <li><strong>Model saving:</strong> Timestamped <code>.txt</code> model file + <code>params.json</code> (including the selected threshold)</li>
-    </ol>
-
-    <h3>13.3 Threshold Selection</h3>
-    <p>Rather than using the default 0.5 threshold, the optimal threshold is selected by maximising F1-score on the validation set:</p>
+    <h3>8.2 Threshold Selection</h3>
+    <p>The optimal decision threshold maximises F1-score on the validation set rather than using the default 0.5:</p>
     <div class="formula-box">
       F1(t) = 2 &middot; precision(t) &middot; recall(t) / (precision(t) + recall(t))<br>
       optimal_threshold = argmax<sub>t</sub> F1(t)
     </div>
-    <p>This allows tuning the precision&ndash;recall trade-off: a lower threshold catches more delays (higher recall) but generates more false alarms (lower precision).</p>
-    <div class="highlight-box">Refer to notebook <strong>03_training.ipynb</strong> for Precision / Recall / F1 vs. Threshold curve.</div>
-    <p class="figure-caption">Threshold selection: precision, recall, and F1 as a function of decision threshold</p>
 
-    <h3>13.4 Artifacts Saved</h3>
+    <h3>8.3 Artifacts Saved</h3>
     <table class="compact">
-      <tr><th>File</th><th>Format</th><th>Contents</th></tr>
-      <tr><td><code>model_YYYYMMDD_HHMMSS.txt</code></td><td>LightGBM text</td><td>Trained model (tree structure + weights)</td></tr>
-      <tr><td><code>params.json</code></td><td>JSON</td><td>Decision threshold, validation metrics, hyperparameters</td></tr>
-      <tr><td><code>pipeline.pkl</code></td><td>joblib</td><td>Fitted FeaturePipeline (all encoders + aggregates)</td></tr>
-      <tr><td><code>target_encoder.pkl</code></td><td>joblib</td><td>Fitted KFoldTargetEncoder</td></tr>
-      <tr><td><code>best_params.json</code></td><td>JSON</td><td>Optuna best hyperparameters (if tuning was run)</td></tr>
+      <tr><th>File</th><th>Contents</th></tr>
+      <tr><td><code>model_YYYYMMDD_HHMMSS.txt</code></td><td>Trained model (tree structure + weights)</td></tr>
+      <tr><td><code>params.json</code></td><td>Threshold, validation metrics, hyperparameters</td></tr>
+      <tr><td><code>pipeline.pkl</code></td><td>Fitted FeaturePipeline (all encoders + aggregates)</td></tr>
+      <tr><td><code>target_encoder.pkl</code></td><td>Fitted KFoldTargetEncoder</td></tr>
+      <tr><td><code>best_params.json</code></td><td>Optuna best hyperparameters</td></tr>
     </table>
-
-    <div class="highlight-box">Refer to notebook <strong>03_training.ipynb</strong> for LightGBM Feature Importance (Gain) ranking.</div>
-    <p class="figure-caption">LightGBM built-in feature importance ranked by gain</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 14. EVALUATION METRICS ══════════════ -->
+<!-- ═══════════════════ 9. EVALUATION & RESULTS ═══════════ -->
 <div class="page-break">
-  <h2 class="section-title">14. Model Evaluation Metrics</h2>
+  <h2 class="section-title">9. Evaluation &amp; Results</h2>
   <div class="section-body">
-    <h3>14.1 Why Not Just Accuracy?</h3>
-    <p>With a ~20% positive rate, a trivial &ldquo;always predict on-time&rdquo; classifier achieves ~80% accuracy. This makes accuracy a poor discriminator between useful models and useless baselines. Metrics that focus on the minority class (delayed flights) provide more meaningful comparisons.</p>
+    <h3>9.1 Why Not Just Accuracy?</h3>
+    <p>With ~20% positive rate, a trivial &ldquo;always on-time&rdquo; classifier gets ~80% accuracy. PR-AUC focuses on the model&rsquo;s ability to correctly identify the minority delayed class, making it far more informative.</p>
 
-    <h3>14.2 Primary Metric: PR-AUC</h3>
-    <p>PR-AUC (Precision&ndash;Recall Area Under Curve) summarises the precision&ndash;recall trade-off across all classification thresholds. Unlike ROC-AUC, which can be inflated by the large number of true negatives, PR-AUC is sensitive to the model&rsquo;s ability to correctly identify delayed flights. A PR-AUC of 0.35 means the model significantly outperforms random chance (baseline &asymp; 0.20, the positive class rate).</p>
-
-    <h3>14.3 Full Metric Suite</h3>
-    <table>
+    <h3>9.2 Metric Suite</h3>
+    <table class="compact">
       <tr><th>Metric</th><th>Description</th></tr>
-      <tr><td><strong>PR-AUC</strong></td><td>Primary metric: area under the precision&ndash;recall curve</td></tr>
-      <tr><td><strong>ROC-AUC</strong></td><td>Area under the receiver operating characteristic curve</td></tr>
-      <tr><td><strong>F1-Score</strong></td><td>Harmonic mean of precision and recall at the chosen threshold</td></tr>
-      <tr><td><strong>Precision @ 50% Recall</strong></td><td>Model precision when catching half of all true delays</td></tr>
-      <tr><td><strong>Recall @ 80% Precision</strong></td><td>Fraction of delays caught when 80% of predictions are correct</td></tr>
-      <tr><td><strong>Brier Score</strong></td><td>Calibration error: mean squared difference between predicted probability and actual outcome (lower is better)</td></tr>
-      <tr><td><strong>Optimal Threshold</strong></td><td>F1-maximising decision threshold on the validation set</td></tr>
-      <tr><td><strong>Confusion Matrix</strong></td><td>True Positive, True Negative, False Positive, False Negative counts</td></tr>
-      <tr><td><strong>Classification Report</strong></td><td>Per-class precision, recall, F1-score, and support</td></tr>
+      <tr><td><strong>PR-AUC</strong></td><td>Primary: area under precision&ndash;recall curve</td></tr>
+      <tr><td><strong>ROC-AUC</strong></td><td>Receiver operating characteristic AUC</td></tr>
+      <tr><td><strong>F1-Score</strong></td><td>Harmonic mean of precision &amp; recall at chosen threshold</td></tr>
+      <tr><td><strong>Precision @ 50% Recall</strong></td><td>Precision when catching half of all delays</td></tr>
+      <tr><td><strong>Recall @ 80% Precision</strong></td><td>Delays caught when 80% of predictions are correct</td></tr>
+      <tr><td><strong>Brier Score</strong></td><td>Calibration error (lower is better)</td></tr>
     </table>
 
-    <h3>14.4 Visualisations Generated</h3>
-    <ul>
-      <li><strong>Precision&ndash;Recall Curve</strong> (<code>pr_curve.png</code>): Precision vs. recall with AUC annotation</li>
-      <li><strong>ROC Curve</strong> (<code>roc_curve.png</code>): True positive rate vs. false positive rate</li>
-      <li><strong>Calibration Curve</strong> (<code>calibration_curve.png</code>): Predicted probability vs. observed frequency (10 bins)</li>
-      <li><strong>Confusion Matrix</strong> (<code>confusion_matrix.png</code>): Labelled heatmap with counts and percentages</li>
-      <li><strong>Partial Dependence Plots</strong>: Model response curves for the top 3 SHAP features</li>
-    </ul>
-  </div>
-</div>
-
-<!-- ═══════════════════ 15. RESULTS ═════════════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">15. Results and Analysis</h2>
-  <div class="section-body">
-    <h3>15.1 Performance Targets</h3>
-    <p>Flight delay prediction without real-time weather data is inherently limited&mdash;weather is the largest single cause of delays but is not available 24 hours in advance with sufficient airport-level accuracy. Realistic targets are:</p>
-    <table>
-      <tr><th>Metric</th><th>Target</th><th>Rationale</th></tr>
-      <tr><td>PR-AUC</td><td>&gt; 0.35</td><td>Significantly above the ~0.20 random baseline</td></tr>
-      <tr><td>ROC-AUC</td><td>&gt; 0.70</td><td>Solid discrimination between delayed and on-time classes</td></tr>
-      <tr><td>Inference Latency</td><td>&lt; 200 ms</td><td>Acceptable for an interactive web application</td></tr>
-    </table>
+    <h3>9.3 Test-Set Results</h3>
     <img src="pr_curve.png" alt="PR Curve" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+    <p class="figure-caption">Precision&ndash;Recall curve on held-out Nov&ndash;Dec test set</p>
     <img src="roc_curve.png" alt="ROC Curve" style="width:100%;max-width:520px;display:block;margin:10px auto 0;">
-    <p class="figure-caption">Full test-set evaluation results</p>
+    <p class="figure-caption">ROC curve on held-out Nov&ndash;Dec test set</p>
 
-    <h3>15.2 Feature Importance Analysis</h3>
-    <p>Based on LightGBM&rsquo;s built-in gain importance and SHAP analysis, the most important features are typically:</p>
-    <ol>
-      <li><strong><code>departure_hour</code> / <code>CRS_DEP_TIME</code>:</strong> Evening departures have significantly higher delay rates due to cascading delays accumulated throughout the day</li>
-      <li><strong><code>airline_delay_rate</code>:</strong> Some carriers consistently perform worse than the industry average</li>
-      <li><strong><code>route_delay_rate</code>:</strong> Certain routes (e.g., involving congested hub airports) have structurally higher delay rates</li>
-      <li><strong><code>CRS_ELAPSED_TIME</code> / <code>DISTANCE</code>:</strong> Flight duration and distance correlate with delay patterns</li>
-      <li><strong><code>OP_CARRIER_te</code>:</strong> Captures airline-specific operational characteristics</li>
-      <li><strong><code>ORIGIN_te</code> / <code>DEST_te</code>:</strong> Airport-level congestion and operational efficiency</li>
-      <li><strong><code>Month</code> / <code>DayOfWeek</code>:</strong> Seasonal and weekly patterns</li>
-      <li><strong><code>is_near_holiday</code>:</strong> Holiday periods show elevated delay rates</li>
-    </ol>
+    <h3>9.4 Confusion Matrix</h3>
+    <p><strong>False Negatives</strong> (delayed flights predicted on-time) carry higher cost than <strong>False Positives</strong> (on-time flights predicted delayed). The <code>scale_pos_weight</code> parameter and threshold tuning both shift the model toward higher recall when desired.</p>
+    <img src="confusion_matrix.png" alt="Confusion Matrix" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+    <p class="figure-caption">Confusion matrix on the held-out test set</p>
+
+    <h3>9.5 Calibration</h3>
+    <img src="calibration_curve.png" alt="Calibration Curve" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+    <p class="figure-caption">Calibration curve: predicted probability vs. observed frequency</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 16. SHAP & LEAKAGE AUDIT ═══════════ -->
+<!-- ═══════════════════ 10. SHAP & LEAKAGE AUDIT ═══════════ -->
 <div class="page-break">
-  <h2 class="section-title">16. SHAP Interpretability and Leakage Audit</h2>
+  <h2 class="section-title">10. SHAP Interpretability &amp; Leakage Audit</h2>
   <div class="section-body">
-    <h3>16.1 SHAP Global Summary</h3>
-    <p>SHAP TreeExplainer is applied to a random sample of 2,000 test-set rows (for computational tractability) to produce two complementary visualisations:</p>
+    <h3>10.1 Global Feature Importance</h3>
+    <p>SHAP TreeExplainer applied to 2,000 random test-set rows produces two complementary views:</p>
     <ol>
-      <li><strong>Beeswarm plot:</strong> Each point represents one flight. Horizontal position shows the SHAP value (impact on prediction). Colour indicates the feature value (red = high, blue = low). This reveals both feature importance and the <em>direction</em> of each feature&rsquo;s effect.</li>
-      <li><strong>Bar plot:</strong> Mean absolute SHAP value per feature, providing a simple ranking of overall feature importance.</li>
+      <li><strong>Beeswarm:</strong> Each point = one flight. Horizontal position = SHAP value. Colour = feature value (red=high, blue=low). Shows both importance and direction of effect.</li>
+      <li><strong>Bar:</strong> Mean |SHAP| per feature&mdash;a simple importance ranking.</li>
     </ol>
     <img src="shap_summary.png" alt="SHAP Summary" style="width:100%;max-width:600px;display:block;margin:0 auto;">
     <img src="shap_bar.png" alt="SHAP Bar" style="width:100%;max-width:520px;display:block;margin:10px auto 0;">
-    <p class="figure-caption">SHAP global feature importance: beeswarm (left) and mean |SHAP| bar chart (right)</p>
+    <p class="figure-caption">SHAP global feature importance: beeswarm and mean |SHAP| bar chart</p>
 
-    <h3>16.2 Per-Prediction Explanations</h3>
-    <p>For each API prediction, the <strong>top 5 SHAP factors</strong> are computed and returned in the response:</p>
+    <h3>10.2 Per-Prediction Explanations</h3>
+    <p>Each prediction returns the top 5 SHAP factors with signed impacts:</p>
     <pre><code>"top_factors": [
     {"feature": "airline_delay_rate", "impact": +0.1523},
     {"feature": "departure_hour",     "impact": +0.1198},
@@ -783,20 +510,13 @@ seed:              42              # reproducibility</code></pre>
     {"feature": "ORIGIN_te",          "impact": +0.0534},
     {"feature": "Month_sin",          "impact": -0.0291}
 ]</code></pre>
-    <p>Positive impact values increase delay probability; negative values decrease it. This decomposition enables passengers and planners to understand the <em>reasoning</em> behind each prediction.</p>
 
-    <h3>16.3 Partial Dependence Plots</h3>
-    <p>PDPs show the marginal effect of the top 3 SHAP features on predicted delay probability, averaged over all other features. These reveal non-linear relationships&mdash;for example, delay probability increasing sharply after 5 PM departure time.</p>
-    <div class="highlight-box">Refer to notebook <strong>04_evaluation.ipynb</strong> for Partial Dependence Plots of top features.</div>
-    <p class="figure-caption">Partial dependence plot for departure hour</p>
-
-    <h3>16.4 Three-Stage Leakage Audit</h3>
-    <p>The <code>run_leakage_audit()</code> function in <code>src/utils/leakage_check.py</code> performs three independent checks:</p>
-    <table>
+    <h3>10.3 Three-Stage Leakage Audit</h3>
+    <table class="compact">
       <tr><th>Stage</th><th>Check</th><th>Threshold</th></tr>
-      <tr><td>1</td><td>Verify no column from the 14-item blacklist is present in the data</td><td>Any match &rarr; <code>ValueError</code></td></tr>
-      <tr><td>2</td><td>Compute Pearson correlation between each numeric feature and the target</td><td>|r| &gt; 0.95 &rarr; flag as leakage suspect</td></tr>
-      <tr><td>3</td><td>SHAP importance: percentage of total mean |SHAP| contributed by each feature (in notebook 04)</td><td>Any feature &gt; 40% &rarr; warning</td></tr>
+      <tr><td>1</td><td>No blacklisted column present in data</td><td>Any match &rarr; <code>ValueError</code></td></tr>
+      <tr><td>2</td><td>Pearson correlation with target</td><td>|r| &gt; 0.95 &rarr; flagged</td></tr>
+      <tr><td>3</td><td>SHAP importance concentration</td><td>Any feature &gt; 40% &rarr; warning</td></tr>
     </table>
     <pre><code>============================================================
   LEAKAGE AUDIT REPORT
@@ -809,31 +529,11 @@ seed:              42              # reproducibility</code></pre>
   </div>
 </div>
 
-<!-- ═══════════════════ 17. CONFUSION MATRIX ════════════════ -->
+<!-- ═══════════════════ 11. WEB APP & DEPLOYMENT ═══════════ -->
 <div class="page-break">
-  <h2 class="section-title">17. Confusion Matrix Analysis</h2>
+  <h2 class="section-title">11. Web Application &amp; Deployment</h2>
   <div class="section-body">
-    <table>
-      <tr><th></th><th>Predicted On-Time</th><th>Predicted Delayed</th></tr>
-      <tr><td><strong>Actually On-Time</strong></td><td style="background:#c8e6c9;">True Negative (TN)</td><td style="background:#fff9c4;">False Positive (FP)</td></tr>
-      <tr><td><strong>Actually Delayed</strong></td><td style="background:#ffcdd2;">False Negative (FN)</td><td style="background:#c8e6c9;">True Positive (TP)</td></tr>
-    </table>
-    <h3>17.1 Error Types and Their Costs</h3>
-    <ul>
-      <li><strong>False Positives (FP):</strong> On-time flights incorrectly predicted as delayed. Cost: unnecessary passenger anxiety, potential rebooking expenses. <em>Moderate cost.</em></li>
-      <li><strong>False Negatives (FN):</strong> Delayed flights incorrectly predicted as on-time. Cost: missed connections, lack of preparedness, downstream planning failures. <em>Higher cost.</em></li>
-    </ul>
-    <p>Given the asymmetric costs, the model should prioritise recall (minimising false negatives) while maintaining acceptable precision. The <code>scale_pos_weight</code> parameter and threshold tuning both provide mechanisms to shift the model toward higher recall when desired.</p>
-    <img src="confusion_matrix.png" alt="Confusion Matrix" style="width:100%;max-width:520px;display:block;margin:0 auto;">
-    <p class="figure-caption">Confusion matrix on the held-out November&ndash;December test set</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 18. WEB APPLICATION ═════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">18. Full-Stack Web Application</h2>
-  <div class="section-body">
-    <h3>18.1 Architecture</h3>
+    <h3>11.1 Architecture</h3>
     <div class="arch-diagram">    +-----------------+   POST /predict   +------------------+
     |   React UI      | ----------------&gt; |  FastAPI          |
     |   (Port 3000)   | &lt;---------------- |  (Port 8000)      |
@@ -844,90 +544,33 @@ seed:              42              # reproducibility</code></pre>
                                           |  + SHAP Values   |
                                           +------------------+</div>
 
-    <h3>18.2 FastAPI Backend</h3>
+    <h3>11.2 FastAPI Backend</h3>
     <table class="compact">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td><code>GET</code></td><td><code>/</code></td><td>Redirect to <code>/docs</code> (Swagger UI)</td></tr>
-      <tr><td><code>GET</code></td><td><code>/health</code></td><td>Returns model status, load state, and version</td></tr>
-      <tr><td><code>POST</code></td><td><code>/predict</code></td><td>Accepts flight details, returns prediction + SHAP factors</td></tr>
+      <tr><td><code>GET</code></td><td><code>/health</code></td><td>Model status, load state, version</td></tr>
+      <tr><td><code>POST</code></td><td><code>/predict</code></td><td>Flight details &rarr; prediction + SHAP factors</td></tr>
     </table>
-    <p><strong>Request body</strong> (<code>PredictRequest</code>, Pydantic v2):</p>
-    <pre><code>{
-    "airline":             "AA",                       // 2-3 chars, auto-uppercased
-    "origin":              "JFK",                      // 3-4 chars, auto-uppercased
-    "destination":         "LAX",                      // 3-4 chars, auto-uppercased
-    "scheduled_departure": "2026-07-12T14:30:00",      // ISO 8601 datetime
-    "tail_number":         "N123AA"                    // optional (nullable)
-}</code></pre>
-    <p><strong>Response body</strong> (<code>PredictResponse</code>):</p>
-    <pre><code>{
-    "delay_probability": 0.6723,
-    "prediction":        1,
-    "risk_level":        "High",
-    "top_factors": [
-        {"feature": "airline_delay_rate", "impact":  0.1523},
-        {"feature": "departure_hour",     "impact":  0.1198},
-        {"feature": "route_distance_km",  "impact": -0.0812},
-        {"feature": "ORIGIN_te",          "impact":  0.0534},
-        {"feature": "Month_sin",          "impact": -0.0291}
-    ],
-    "threshold_used": 0.50
-}</code></pre>
-    <p><strong>Risk level classification:</strong> Low (probability &lt; 0.3) &middot; Medium (0.3 &le; probability &le; 0.6) &middot; High (probability &gt; 0.6)</p>
-    <p><strong>Online feature engineering</strong> (<code>backend/app/features.py</code>): The <code>request_to_raw_df()</code> function converts API input into a raw DataFrame. It maps fields to BTS columns, looks up route distance from a pre-computed table of 45 major routes (with Haversine fallback using 24 airport coordinates), and estimates <code>CRS_ELAPSED_TIME</code> as <code>(distance_miles / 500 mph) &times; 60 + 30 minutes overhead</code>.</p>
-    <p><strong>Model singleton</strong> (<code>backend/app/model.py</code>): The <code>FlightDelayModel</code> class auto-discovers the latest model (<code>model_*.txt</code>) and pipeline (<code>pipeline*.pkl</code>) from the artifacts directory, initialises the SHAP TreeExplainer, and exposes a thread-safe <code>predict()</code> method. Model warm-up occurs during the FastAPI lifespan startup.</p>
+    <p>Pydantic v2 request validation, CORS middleware, request logging. The <code>FlightDelayModel</code> singleton auto-discovers the latest model and pipeline from the artifacts directory and initialises SHAP TreeExplainer during startup.</p>
 
-    <h3>18.3 React Frontend</h3>
-    <p><strong>Framework:</strong> React 18 + Vite (build tool) + Tailwind CSS 3 (utility-first styling) + Recharts (charting)</p>
-    <table class="compact">
-      <tr><th>Component</th><th>Description</th></tr>
-      <tr><td><code>App.jsx</code></td><td>Root component with system-aware dark-mode toggle</td></tr>
-      <tr><td><code>FlightForm.jsx</code></td><td>5-field form: airline, origin, destination, datetime-local, tail number (optional)</td></tr>
-      <tr><td><code>PredictionResult.jsx</code></td><td>Composite display: gauge + factors chart + risk level badge</td></tr>
-      <tr><td><code>GaugeMeter.jsx</code></td><td>Recharts <code>RadialBarChart</code>&mdash;green (&lt;30%), yellow (30&ndash;60%), red (&gt;60%)</td></tr>
-      <tr><td><code>FactorsChart.jsx</code></td><td>Horizontal <code>BarChart</code>&mdash;red bars (increases delay), blue bars (decreases delay)</td></tr>
-      <tr><td><code>LoadingSkeleton.jsx</code></td><td>Animated pulse placeholder shown during API call</td></tr>
-      <tr><td><code>ErrorToast.jsx</code></td><td>Dismissible error notification for API failures</td></tr>
-    </table>
-    <div class="highlight-box">The live Streamlit application is deployed at: <strong>https://flight-delay-predictor-y7veehaanvd2umrlc4z4zh.streamlit.app/</strong></div>
-    <p class="figure-caption">Flight Delay Predictor web interface</p>
+    <h3>11.3 Streamlit Cloud Deployment</h3>
+    <p>The primary production deployment is a <strong>Streamlit</strong> application deployed on Streamlit Community Cloud. It reuses the same LightGBM model and feature pipeline in-process, with a modular component architecture (<code>config.py</code>, <code>core.py</code>, <code>components/</code> package). Features include:</p>
+    <ul>
+      <li>Interactive 3D globe (globe.gl + Three.js) with animated route arcs</li>
+      <li>Airline-branded boarding pass cards with logo and accent colours</li>
+      <li>SHAP waterfall chart in log-odds space with sigmoid probability labels</li>
+      <li>Semi-circle probability gauge with colour-coded risk assessment</li>
+      <li>Step-by-step <code>st.status()</code> loading feedback</li>
+    </ul>
+    <p><strong>Live:</strong> <code>https://flight-delay-predictor-y7veehaanvd2umrlc4z4zh.streamlit.app/</code></p>
+
+    <h3>11.4 Docker Compose</h3>
+    <p>Backend (Python + Uvicorn, port 8000) and frontend (React &rarr; Nginx, port 3000) containerised with health checks, read-only artifact volumes, and a shared bridge network. Single-command deployment: <code>docker-compose up --build</code>.</p>
   </div>
 </div>
 
-<!-- ═══════════════════ 19. DOCKER ══════════════════════════ -->
+<!-- ═══════════════════ 12. PROJECT STRUCTURE ═══════════════ -->
 <div class="page-break">
-  <h2 class="section-title">19. Docker Deployment</h2>
-  <div class="section-body">
-    <h3>19.1 Docker Compose Configuration</h3>
-    <p><strong>Backend service</strong> (<code>flight-delay-backend</code>):</p>
-    <ul>
-      <li>Builds from <code>backend/Dockerfile</code> (Python + Uvicorn)</li>
-      <li>Exposes port 8000</li>
-      <li>Mounts artifacts as read-only volume: <code>./backend/artifacts:/app/artifacts:ro</code></li>
-      <li>Health check: <code>curl -f http://localhost:8000/health</code> every 30s (timeout: 10s, retries: 3, start period: 10s)</li>
-      <li>Restart policy: <code>unless-stopped</code></li>
-    </ul>
-    <p><strong>Frontend service</strong> (<code>flight-delay-frontend</code>):</p>
-    <ul>
-      <li>Multi-stage Dockerfile: Node.js builder &rarr; Nginx static server</li>
-      <li>Ports: 3000 (host) &rarr; 80 (container)</li>
-      <li>Build arg: <code>VITE_API_URL=http://localhost:8000</code></li>
-      <li>Depends on backend health check passing before starting</li>
-      <li>Custom <code>nginx.conf</code>: SPA routing, gzip compression, cache headers</li>
-    </ul>
-    <h3>19.2 Deployment Command</h3>
-    <pre><code>docker-compose up --build
-
-# Frontend:  http://localhost:3000
-# Backend:   http://localhost:8000
-# API Docs:  http://localhost:8000/docs  (Swagger UI)
-# ReDoc:     http://localhost:8000/redoc</code></pre>
-  </div>
-</div>
-
-<!-- ═══════════════════ 20. PROJECT STRUCTURE ═══════════════ -->
-<div class="page-break">
-  <h2 class="section-title">20. Project Structure</h2>
+  <h2 class="section-title">12. Project Structure</h2>
   <div class="section-body">
     <pre><code>flight-delay-predictor/
 ├── notebooks/
@@ -950,165 +593,87 @@ seed:              42              # reproducibility</code></pre>
 │   │   └── optimize.py              # Optuna hyperparameter tuning
 │   └── utils/
 │       └── leakage_check.py         # Three-stage leakage audit
-├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── app/
-│       ├── main.py                   # FastAPI routes + middleware
-│       ├── model.py                  # FlightDelayModel singleton
-│       ├── features.py              # Online feature engineering
-│       └── schemas.py               # Pydantic v2 request/response
-├── frontend/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── package.json
-│   └── src/
-│       ├── App.jsx                   # Root + dark mode
-│       ├── components/
-│       │   ├── FlightForm.jsx
-│       │   ├── PredictionResult.jsx
-│       │   ├── GaugeMeter.jsx
-│       │   ├── FactorsChart.jsx
-│       │   ├── LoadingSkeleton.jsx
-│       │   └── ErrorToast.jsx
-│       └── utils/api.js             # API client
+├── backend/                          # FastAPI inference server
+├── frontend/                         # React + Vite + Tailwind UI
+├── streamlit_app.py                  # Streamlit Cloud deployment
+├── config.py                         # Constants, airline/airport data
+├── core.py                           # Model loading, inference, utilities
+├── components/                       # Modular Streamlit UI components
 ├── docker-compose.yml
-├── requirements.txt                  # Full training dependencies
-└── README.md</code></pre>
-    <p>The project comprises <strong>47 files</strong> across 5 top-level directories, with a clear separation between the training pipeline (<code>src/</code>), the serving infrastructure (<code>backend/</code>), the user interface (<code>frontend/</code>), and the exploration notebooks (<code>notebooks/</code>).</p>
+└── requirements.txt</code></pre>
   </div>
 </div>
 
-<!-- ═══════════════════ 21. DESIGN DECISIONS ════════════════ -->
+<!-- ═══════════════════ 13. DESIGN DECISIONS ════════════════ -->
 <div class="page-break">
-  <h2 class="section-title">21. Design Decisions and Trade-offs</h2>
+  <h2 class="section-title">13. Design Decisions</h2>
   <div class="section-body">
     <table>
       <tr><th>Decision</th><th>Rationale</th></tr>
-      <tr><td>LightGBM over deep learning</td><td>Handles mixed feature types natively, trains fast, and is directly compatible with SHAP TreeExplainer. Deep learning requires more data and offers less interpretability for tabular tasks.</td></tr>
-      <tr><td>PR-AUC as primary metric</td><td>More informative than ROC-AUC on the ~20% imbalanced positive class. Focuses evaluation on the minority (delayed) class.</td></tr>
-      <tr><td>Temporal split (no shuffle)</td><td>Simulates real deployment where the model only sees future flights. Random splits produce optimistically biased estimates.</td></tr>
-      <tr><td><code>scale_pos_weight</code> for imbalance</td><td>Native LightGBM parameter; avoids the distribution distortion caused by SMOTE.</td></tr>
+      <tr><td>LightGBM over deep learning</td><td>Handles mixed features natively, SHAP-compatible, fast training. Deep learning offers less interpretability for tabular tasks.</td></tr>
+      <tr><td>PR-AUC as primary metric</td><td>More informative than ROC-AUC on ~20% imbalanced positive class.</td></tr>
+      <tr><td>Temporal split (no shuffle)</td><td>Simulates real deployment. Random splits produce optimistic estimates.</td></tr>
       <tr><td>K-Fold target encoding (&lambda;=20)</td><td>Prevents target leakage inherent in na&iuml;ve mean encoding. Smoothing regularises rare categories.</td></tr>
-      <tr><td>Threshold tuning on validation set</td><td>Enables operational flexibility: stakeholders can choose between catching more delays (high recall) and fewer false alarms (high precision).</td></tr>
-      <tr><td>14-column blacklist at load time</td><td>Defence-in-depth: leakage is blocked at the earliest possible stage, before any feature engineering occurs.</td></tr>
-      <tr><td>SHAP per prediction</td><td>Users need to understand <em>why</em> a flight is predicted delayed, not just the probability. Builds trust and enables informed decision-making.</td></tr>
-      <tr><td>Decoupled FastAPI + React</td><td>Backend can serve mobile apps and third-party integrations independently. Frontend can be replaced without touching the model.</td></tr>
-      <tr><td>Docker Compose</td><td>Single-command deployment with health checks and read-only artifact volumes. No model is baked into the Docker image.</td></tr>
+      <tr><td>14-column blacklist at load time</td><td>Defence-in-depth: leakage blocked at earliest possible stage.</td></tr>
+      <tr><td>SHAP per prediction</td><td>Users need to understand <em>why</em>, not just the probability. Builds trust.</td></tr>
+      <tr><td>Threshold tuning on validation</td><td>Enables precision&ndash;recall trade-off: stakeholders choose their operating point.</td></tr>
+      <tr><td>Docker Compose</td><td>Single-command deployment with health checks and read-only volumes.</td></tr>
     </table>
   </div>
 </div>
 
-<!-- ═══════════════════ 22. LIMITATIONS ═════════════════════ -->
+<!-- ═══════════════════ 14. LIMITATIONS & FUTURE ═══════════ -->
 <div class="page-break">
-  <h2 class="section-title">22. Limitations</h2>
+  <h2 class="section-title">14. Limitations &amp; Future Scope</h2>
   <div class="section-body">
-    <h3>22.1 No Real-Time Weather Data</h3>
-    <p>Weather is the single largest cause of flight delays, accounting for approximately 30% of all delay minutes. However, airport-specific weather predictions 24 hours in advance lack sufficient accuracy. The model captures weather effects only indirectly through seasonal patterns (month, holiday proximity) and historical route delay rates.</p>
-    <h3>22.2 Single Data Source and Geography</h3>
-    <p>The model is trained exclusively on U.S. domestic flights from BTS data. It does not generalise to international routes, non-U.S. carriers, or regional airports not covered by BTS reporting requirements.</p>
-    <h3>22.3 Temporal Stationarity Assumption</h3>
-    <p>The model assumes that delay patterns from the training period (January&ndash;August) generalise to the test period (November&ndash;December). In practice, airline schedules, airport infrastructure, and fleet compositions evolve over time. Annual retraining is necessary to maintain prediction quality.</p>
-    <h3>22.4 No Real-Time Operational State</h3>
-    <p>The model cannot account for the current state of the air traffic system: active ground stops, runway closures, ongoing cascading delays, or gate conflicts. These factors are only available minutes to hours before departure, not 24 hours in advance.</p>
-    <h3>22.5 Target Encoding Cold Start</h3>
-    <p>New airlines, airports, or aircraft not seen during training receive the global mean delay rate via the fallback mechanism. Predictions for these entities are reasonable but uninformed until sufficient data accumulates.</p>
-    <h3>22.6 Binary Classification Simplification</h3>
-    <p>The model predicts only &ldquo;delayed&rdquo; (&ge;15 min) vs. &ldquo;on-time&rdquo; (&lt;15 min). It does not predict delay magnitude (e.g., 20 minutes vs. 3 hours), which would be valuable for connection planning. A regression formulation could address this at the cost of different evaluation challenges.</p>
-    <h3>22.7 No Prospective Validation</h3>
-    <p>Evaluation is limited to a held-out temporal split from the same calendar year. The model has not been prospectively validated on a subsequent year&rsquo;s data, which is essential before any operational deployment.</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 23. FUTURE SCOPE ════════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">23. Future Scope</h2>
-  <div class="section-body">
-    <h3>23.1 Weather Feature Integration</h3>
-    <p>Integrating NOAA weather forecasts (temperature, precipitation, wind speed, visibility) at origin and destination airports would significantly improve prediction accuracy. APIs such as the National Weather Service or OpenWeatherMap could provide this data.</p>
-    <h3>23.2 Real-Time Delay Propagation</h3>
-    <p>Incorporating the current delay state of the aircraft (is it already delayed on a previous leg?) and the origin airport (current average delay) would capture cascading effects. This shifts the prediction window from T-24h to T-2h, trading forecast horizon for accuracy.</p>
-    <h3>23.3 Multi-Year Training</h3>
-    <p>Training on 3&ndash;5 years of BTS data would improve robustness to seasonal variations and unusual weather years, and enable proper time-series cross-validation with multiple train/test windows.</p>
-    <h3>23.4 Alternative GBDT Implementations</h3>
-    <p>A systematic comparison with XGBoost and CatBoost could identify marginal improvements. CatBoost&rsquo;s ordered target encoding is a particularly interesting alternative to the manual K-Fold approach used here.</p>
-    <h3>23.5 Stacking Ensemble</h3>
-    <p>Training a meta-learner (e.g., Logistic Regression) on out-of-fold predictions from multiple GBDT variants could improve performance beyond single-model tuning.</p>
-    <h3>23.6 Regression Target (Delay Minutes)</h3>
-    <p>Predicting the continuous delay magnitude rather than a binary classification would enable more nuanced decision-making. A quantile regression approach could additionally provide uncertainty estimates.</p>
-    <h3>23.7 Streamlit Cloud Deployment (Completed)</h3>
-    <p>The application has been deployed to Streamlit Community Cloud, providing free public access at <strong>https://flight-delay-predictor-y7veehaanvd2umrlc4z4zh.streamlit.app/</strong>. The Streamlit app reuses the same LightGBM model and feature pipeline in-process, features an interactive 3D globe (globe.gl), airline-branded boarding pass cards, a SHAP waterfall chart, and a modular component architecture (config.py, core.py, components/ package). Source code is hosted on GitHub at <strong>https://github.com/Paras-Dhatwalia/Flight-Delay-Predictor</strong>.</p>
-    <h3>23.8 Mobile Application</h3>
-    <p>Wrapping the REST API in a mobile application (React Native or Flutter) would make predictions accessible to passengers on the go, with push-notification support for updated predictions closer to departure.</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 24. CONCLUSION ══════════════════════ -->
-<div class="page-break">
-  <h2 class="section-title">24. Conclusion</h2>
-  <div class="section-body">
-    <p>This project demonstrates a complete end-to-end machine learning pipeline for flight delay prediction&mdash;from raw BTS data ingestion through feature engineering, model training, evaluation, and deployment as a production-ready full-stack web application.</p>
-    <p>The system addresses the critical challenge of temporal information leakage through multiple defence layers: a 14-column blacklist (26 case variants) enforced at data loading time, a temporal train/validation/test split with chronological assertion guards, K-Fold out-of-fold target encoding to prevent within-sample leakage, and a three-stage leakage audit combining blacklist verification, high-correlation scanning, and SHAP importance analysis.</p>
-    <p>The 17-feature engineering pipeline captures five distinct signal types&mdash;temporal (cyclic sin/cos encoding), spatial (Haversine great-circle distance using 139 airport coordinates), categorical (K-Fold smoothed target encoding with &lambda;=20), historical (route and airline delay rate aggregates with minimum-sample thresholds), and calendar (US federal holiday proximity within &plusmn;2 days)&mdash;all derived exclusively from information available 24 hours before departure.</p>
-    <p>LightGBM was selected for its native handling of mixed feature types, built-in missing-value support, efficient histogram-based training, and compatibility with SHAP TreeExplainer for per-prediction interpretability. Optuna-based Bayesian hyperparameter optimisation (TPE sampler, 50 trials, PR-AUC objective) further improves model quality beyond default parameters.</p>
-    <p>Evaluation uses PR-AUC as the primary metric&mdash;appropriate for the ~20% imbalanced positive class&mdash;supplemented by ROC-AUC, F1, calibration (Brier score), precision at fixed recall, and recall at fixed precision. SHAP analysis provides both global feature importance (beeswarm and bar plots) and per-prediction explanations (top 5 factors with signed impacts).</p>
-    <p>The trained model is deployed through a FastAPI REST API with Pydantic v2 request validation, CORS middleware, and request logging, paired with a React + Tailwind CSS frontend featuring a colour-coded probability gauge, SHAP factor bar chart, and dark-mode support. Both services are containerised with Docker Compose for reproducible, single-command deployment with health checks and read-only artifact volumes.</p>
-    <p>More broadly, this project demonstrates that principled machine learning&mdash;combining rigorous leakage prevention, appropriate evaluation metrics for imbalanced data, model interpretability, and modern software engineering practices&mdash;can produce useful predictive tools for transportation logistics. With the addition of real-time weather data and delay propagation features, such systems could provide meaningful decision support for passengers, airlines, and airport operations planners.</p>
-  </div>
-</div>
-
-<!-- ═══════════════════ 25. TOOLS & TECHNOLOGIES ═══════════ -->
-<div class="page-break">
-  <h2 class="section-title">25. Tools and Technologies</h2>
-  <div class="section-body">
+    <h3>14.1 Current Limitations</h3>
     <ul>
-      <li><strong>Python 3.11+</strong>&mdash;Core programming language, chosen for its mature data science ecosystem (NumPy, pandas, scikit-learn, LightGBM) and web framework support (FastAPI).</li>
-      <li><strong>LightGBM 4.3+</strong>&mdash;Gradient-boosting framework by Microsoft Research. Uses histogram-based leaf-wise tree growth for fast, accurate training on tabular data.</li>
-      <li><strong>Optuna 3.6+</strong>&mdash;Bayesian hyperparameter optimisation using Tree-structured Parzen Estimators (TPE). Efficiently explores high-dimensional hyperparameter spaces.</li>
-      <li><strong>SHAP 0.45+</strong>&mdash;SHapley Additive exPlanations for model interpretability. TreeSHAP provides exact feature attributions for tree-ensemble models in polynomial time.</li>
-      <li><strong>scikit-learn 1.4+</strong>&mdash;Evaluation metrics (PR-AUC, ROC-AUC, F1, Brier score), precision&ndash;recall curves, confusion matrices, and classification reports.</li>
-      <li><strong>pandas 2.2+</strong>&mdash;DataFrame-based data manipulation, groupby aggregation, and temporal operations.</li>
-      <li><strong>NumPy 1.26+</strong>&mdash;Vectorised numerical operations, particularly for the Haversine distance computation and cyclic encoding.</li>
-      <li><strong>FastAPI 0.111+</strong>&mdash;Asynchronous Python web framework with automatic OpenAPI/Swagger documentation and Pydantic v2 request/response validation.</li>
-      <li><strong>Uvicorn</strong>&mdash;ASGI server for production-grade FastAPI deployment.</li>
-      <li><strong>React 18</strong>&mdash;Component-based frontend UI library for building the interactive prediction interface.</li>
-      <li><strong>Vite</strong>&mdash;Next-generation frontend build tool with near-instant hot module replacement during development and optimised production builds.</li>
-      <li><strong>Tailwind CSS 3</strong>&mdash;Utility-first CSS framework enabling rapid, consistent styling with class-based dark-mode support.</li>
-      <li><strong>Recharts</strong>&mdash;React-based charting library. Used for the probability gauge (<code>RadialBarChart</code>) and SHAP factor chart (<code>BarChart</code>).</li>
-      <li><strong>Docker &amp; Docker Compose</strong>&mdash;Containerisation and multi-service orchestration with health checks, bridge networking, and read-only volume mounts.</li>
-      <li><strong>Nginx</strong>&mdash;Production HTTP server for compiled React assets with SPA routing, gzip compression, and static-asset cache headers.</li>
-      <li><strong>joblib</strong>&mdash;Efficient serialisation of the fitted feature pipeline and target encoder for deployment.</li>
-      <li><strong>PyArrow 16+</strong>&mdash;Fast Parquet I/O for intermediate feature storage between pipeline stages.</li>
-      <li><strong>matplotlib 3.8+ / seaborn 0.13+</strong>&mdash;Visualisation libraries for EDA plots, evaluation curves, and SHAP summary figures.</li>
-      <li><strong>Jupyter Notebook</strong>&mdash;Interactive environment for exploratory analysis (01_eda), feature engineering visualisation (02), training (03), and evaluation (04).</li>
-      <li><strong>pytest 8.2+ / httpx 0.27+</strong>&mdash;Testing framework with async HTTP client for FastAPI endpoint testing.</li>
-      <li><strong>Git / GitHub</strong>&mdash;Version control and repository hosting with structured project organisation.</li>
+      <li><strong>No real-time weather:</strong> Weather causes ~30% of delay minutes but airport-specific 24h forecasts lack sufficient accuracy. The model captures weather only indirectly via seasonal patterns and historical rates.</li>
+      <li><strong>U.S. domestic only:</strong> Trained exclusively on BTS data; does not generalise to international routes or non-U.S. carriers.</li>
+      <li><strong>No operational state:</strong> Cannot account for active ground stops, runway closures, or cascading delays&mdash;only available minutes before departure.</li>
+      <li><strong>Binary simplification:</strong> Predicts delayed/on-time only, not delay magnitude. Regression could address this.</li>
+      <li><strong>Cold start:</strong> New airlines/airports/aircraft receive the global mean delay rate until sufficient data accumulates.</li>
+    </ul>
+
+    <h3>14.2 Future Scope</h3>
+    <ul>
+      <li><strong>Weather integration:</strong> NOAA/OpenWeatherMap API forecasts at origin and destination airports.</li>
+      <li><strong>Delay propagation:</strong> Real-time aircraft delay state and airport congestion for a T-2h prediction window.</li>
+      <li><strong>Multi-year training:</strong> 3&ndash;5 years of BTS data for robustness to seasonal variation.</li>
+      <li><strong>Quantile regression:</strong> Predict delay magnitude with uncertainty estimates.</li>
+      <li><strong>Stacking ensemble:</strong> Meta-learner on out-of-fold predictions from LightGBM + XGBoost + CatBoost.</li>
     </ul>
   </div>
 </div>
 
-<!-- ═══════════════════ 26. REFERENCES ══════════════════════ -->
+<!-- ═══════════════════ 15. CONCLUSION ══════════════════════ -->
 <div class="page-break">
-  <h2 class="section-title">26. References</h2>
+  <h2 class="section-title">15. Conclusion</h2>
+  <div class="section-body">
+    <p>This project demonstrates a complete end-to-end machine learning pipeline for flight delay prediction&mdash;from raw BTS data ingestion through feature engineering, model training, evaluation, and deployment as a production web application.</p>
+    <p>The system addresses temporal information leakage through multiple defence layers: a 14-column blacklist enforced at data loading, a chronological train/val/test split with assertion guards, K-Fold out-of-fold target encoding, and a three-stage leakage audit combining blacklist verification, high-correlation scanning, and SHAP importance analysis.</p>
+    <p>The 17-feature pipeline captures five distinct signal types&mdash;temporal (cyclic sin/cos), spatial (Haversine distance, 139 airports), categorical (K-Fold target encoding, &lambda;=20), historical (route and airline delay aggregates), and calendar (holiday proximity &plusmn;2 days)&mdash;all derived exclusively from T-24h information.</p>
+    <p>LightGBM with Optuna-based TPE optimisation (50 trials, PR-AUC objective) is evaluated using PR-AUC as the primary metric, supplemented by ROC-AUC, F1, Brier score, and precision/recall at fixed operating points. SHAP TreeExplainer provides both global importance and per-prediction explanations.</p>
+    <p>The model is deployed as a Streamlit web application on Streamlit Community Cloud with an interactive 3D globe, SHAP waterfall chart, and airline-branded UI, as well as a FastAPI + React + Docker Compose alternative. Source code: <strong>https://github.com/Paras-Dhatwalia/Flight-Delay-Predictor</strong>.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ 16. REFERENCES ══════════════════════ -->
+<div class="page-break">
+  <h2 class="section-title">16. References</h2>
   <div class="section-body references">
     <p>[1] Bureau of Transportation Statistics (BTS). <em>On-Time Performance Data.</em> U.S. Department of Transportation. https://www.transtats.bts.gov/</p>
-    <p>[2] Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., &amp; Liu, T.-Y. (2017). LightGBM: A Highly Efficient Gradient Boosting Decision Tree. <em>Advances in Neural Information Processing Systems</em>, 30, 3146&ndash;3154.</p>
-    <p>[3] Lundberg, S. M., &amp; Lee, S.-I. (2017). A Unified Approach to Interpreting Model Predictions. <em>Advances in Neural Information Processing Systems</em>, 30, 4765&ndash;4774.</p>
-    <p>[4] Akiba, T., Sano, S., Yanase, T., Ohta, T., &amp; Koyama, M. (2019). Optuna: A Next-generation Hyperparameter Optimization Framework. <em>Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 2623&ndash;2631.</p>
-    <p>[5] Rebollo, J. J., &amp; Balakrishnan, H. (2014). Characterization and Prediction of Air Traffic Delays. <em>Transportation Research Part C: Emerging Technologies</em>, 44, 231&ndash;241.</p>
-    <p>[6] Mueller, E. R., &amp; Chatterji, G. B. (2002). Analysis of Aircraft Arrival and Departure Delay Characteristics. <em>AIAA Aircraft Technology, Integration, and Operations (ATIO) Conference</em>.</p>
-    <p>[7] Kim, Y. J., Choi, S., Briceno, S., &amp; Mavris, D. (2016). A Deep Learning Approach to Flight Delay Prediction. <em>IEEE/AIAA 35th Digital Avionics Systems Conference (DASC)</em>, 1&ndash;6.</p>
-    <p>[8] Choi, S., Kim, Y. J., Briceno, S., &amp; Mavris, D. (2016). Prediction of Weather-induced Airline Delays Based on Machine Learning Algorithms. <em>IEEE/AIAA 35th Digital Avionics Systems Conference (DASC)</em>, 1&ndash;6.</p>
-    <p>[9] Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. <em>Journal of Machine Learning Research</em>, 12, 2825&ndash;2830.</p>
-    <p>[10] Breiman, L. (2001). Random Forests. <em>Machine Learning</em>, 45(1), 5&ndash;32.</p>
-    <p>[11] Chen, T., &amp; Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 785&ndash;794.</p>
-    <p>[12] Hensman, P., &amp; Masko, D. (2015). The Impact of Imbalanced Training Data for Convolutional Neural Networks. <em>KTH Royal Institute of Technology</em>.</p>
-    <p>[13] FastAPI Documentation. https://fastapi.tiangolo.com/</p>
-    <p>[14] React Documentation. https://react.dev/</p>
-    <p>[15] Tailwind CSS Documentation. https://tailwindcss.com/</p>
-    <p>[16] Docker Documentation. https://docs.docker.com/</p>
-    <p>[17] SHAP Documentation. https://shap.readthedocs.io/</p>
-    <p>[18] Federal Aviation Administration (FAA). <em>Air Traffic Organization Performance Reports.</em> https://www.faa.gov/</p>
+    <p>[2] Ke, G., Meng, Q., Finley, T., et al. (2017). LightGBM: A Highly Efficient Gradient Boosting Decision Tree. <em>NeurIPS</em>, 30, 3146&ndash;3154.</p>
+    <p>[3] Lundberg, S. M. &amp; Lee, S.-I. (2017). A Unified Approach to Interpreting Model Predictions. <em>NeurIPS</em>, 30, 4765&ndash;4774.</p>
+    <p>[4] Akiba, T., Sano, S., Yanase, T., et al. (2019). Optuna: A Next-generation Hyperparameter Optimization Framework. <em>ACM SIGKDD</em>, 2623&ndash;2631.</p>
+    <p>[5] Rebollo, J. J. &amp; Balakrishnan, H. (2014). Characterization and Prediction of Air Traffic Delays. <em>Transportation Research Part C</em>, 44, 231&ndash;241.</p>
+    <p>[6] Kim, Y. J., Choi, S., Briceno, S. &amp; Mavris, D. (2016). A Deep Learning Approach to Flight Delay Prediction. <em>IEEE/AIAA DASC</em>, 1&ndash;6.</p>
+    <p>[7] Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. <em>JMLR</em>, 12, 2825&ndash;2830.</p>
+    <p>[8] Chen, T. &amp; Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. <em>ACM SIGKDD</em>, 785&ndash;794.</p>
+    <p>[9] Federal Aviation Administration (FAA). <em>Air Traffic Organization Performance Reports.</em> https://www.faa.gov/</p>
+    <p>[10] FastAPI Documentation. https://fastapi.tiangolo.com/</p>
+    <p>[11] SHAP Documentation. https://shap.readthedocs.io/</p>
+    <p>[12] Docker Documentation. https://docs.docker.com/</p>
   </div>
 </div>
 
