@@ -205,7 +205,7 @@
 <div class="abstract-page page-break">
   <h2>Abstract</h2>
   <p>This project builds an end-to-end machine learning system that predicts whether a U.S. domestic flight will arrive 15 or more minutes late, using only information available 24 hours before departure. The system employs a LightGBM gradient-boosted decision tree trained on the Bureau of Transportation Statistics (BTS) On-Time Performance dataset (~7 million flights). A 17-feature engineering pipeline transforms raw records through cyclic temporal encoding, Haversine great-circle distance, K-Fold smoothed target encoding (&lambda;=20), historical delay aggregates, and holiday proximity detection.</p>
-  <p>A strict temporal split (Jan&ndash;Aug training, Sep&ndash;Oct validation, Nov&ndash;Dec test) simulates real deployment. Evaluation uses PR-AUC as the primary metric given the ~20% imbalanced positive class. A three-stage leakage audit (blacklist enforcement, high-correlation scan, SHAP importance check) ensures no post-departure information contaminates predictions. SHAP TreeExplainer provides per-prediction feature attributions.</p>
+  <p>A strict temporal split (Jan&ndash;Aug training, Sep&ndash;Oct validation, Nov&ndash;Dec test) simulates real deployment. Evaluation uses PR-AUC as the primary metric given the ~20% imbalanced positive class. A three-stage leakage audit (blacklist enforcement, high-correlation scan, SHAP importance check) ensures no post-departure information contaminates predictions. SHAP TreeExplainer provides per-prediction feature attributions. Results indicate that standard T-24h scheduling data carries a low empirical ceiling for prediction (PR-AUC 0.232 vs. 0.21 random baseline), underscoring the overwhelming impact of unpredictable weather and same-day operational cascades on flight delays.</p>
   <p>The model is deployed as a Streamlit web application on Streamlit Community Cloud, featuring an interactive 3D globe, airline-branded boarding pass cards, a SHAP waterfall chart, and a modular component architecture. A FastAPI + React alternative is also containerised via Docker Compose.</p>
 </div>
 
@@ -481,13 +481,14 @@ max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
     <p class="figure-caption">ROC curve on held-out Nov&ndash;Dec test set (ROC-AUC = 0.599)</p>
 
     <h3>9.4 Confusion Matrix</h3>
-    <p><strong>False Negatives</strong> (delayed flights predicted on-time) carry higher cost than <strong>False Positives</strong> (on-time flights predicted delayed). The <code>scale_pos_weight</code> parameter and threshold tuning both shift the model toward higher recall when desired.</p>
+    <p>The F1-maximising threshold on the validation set was <strong>0.2244</strong> (well below the default 0.5, reflecting the ~20% base rate). <strong>False Negatives</strong> (delayed flights predicted on-time) carry higher cost than <strong>False Positives</strong> (on-time flights predicted delayed). The <code>scale_pos_weight</code> parameter and threshold tuning both shift the model toward higher recall when desired.</p>
     <img src="confusion_matrix.png" alt="Confusion Matrix" style="width:100%;max-width:520px;display:block;margin:0 auto;">
     <p class="figure-caption">Confusion matrix on the held-out test set</p>
 
     <h3>9.5 Calibration</h3>
+    <p>The model achieves a <strong>Brier score of 0.151</strong> (lower is better; a perfect model scores 0.0, predicting the base rate for every flight scores ~0.166). This indicates the predicted probabilities are reasonably well-calibrated despite the weak overall discrimination.</p>
     <img src="calibration_curve.png" alt="Calibration Curve" style="width:100%;max-width:520px;display:block;margin:0 auto;">
-    <p class="figure-caption">Calibration curve: predicted probability vs. observed frequency</p>
+    <p class="figure-caption">Calibration curve: predicted probability vs. observed frequency (Brier = 0.151)</p>
   </div>
 </div>
 
@@ -496,6 +497,7 @@ max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
   <h2 class="section-title">10. SHAP Interpretability &amp; Leakage Audit</h2>
   <div class="section-body">
     <h3>10.1 Global Feature Importance</h3>
+    <p>SHAP values are computed in the model&rsquo;s raw margin space (log-odds) rather than probability space. This is essential because SHAP&rsquo;s additive property (<code>base_value + &Sigma;shap_i = f(x)</code>) holds exactly in log-odds but not after the non-linear sigmoid transform. Probability labels shown in the UI are derived via <code>sigmoid()</code> for human readability only.</p>
     <p>SHAP TreeExplainer applied to 2,000 random test-set rows produces two complementary views:</p>
     <ol>
       <li><strong>Beeswarm:</strong> Each point = one flight. Horizontal position = SHAP value. Colour = feature value (red=high, blue=low). Shows both importance and direction of effect.</li>
@@ -660,7 +662,7 @@ max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
     <p>This project demonstrates a complete end-to-end machine learning pipeline for flight delay prediction&mdash;from raw BTS data ingestion through feature engineering, model training, evaluation, and deployment as a production web application.</p>
     <p>The system addresses temporal information leakage through multiple defence layers: a 14-column blacklist enforced at data loading, a chronological train/val/test split with assertion guards, K-Fold out-of-fold target encoding, and a three-stage leakage audit combining blacklist verification, high-correlation scanning, and SHAP importance analysis.</p>
     <p>The 17-feature pipeline captures five distinct signal types&mdash;temporal (cyclic sin/cos), spatial (Haversine distance, 139 airports), categorical (K-Fold target encoding, &lambda;=20), historical (route and airline delay aggregates), and calendar (holiday proximity &plusmn;2 days)&mdash;all derived exclusively from T-24h information.</p>
-    <p>LightGBM with Optuna-based TPE optimisation (50 trials, PR-AUC objective) is evaluated using PR-AUC as the primary metric, supplemented by ROC-AUC, F1, Brier score, and precision/recall at fixed operating points. SHAP TreeExplainer provides both global importance and per-prediction explanations.</p>
+    <p>LightGBM with Optuna-based TPE optimisation (50 trials, PR-AUC objective) is evaluated using PR-AUC as the primary metric, supplemented by ROC-AUC, F1, Brier score, and precision/recall at fixed operating points. SHAP TreeExplainer provides both global importance and per-prediction explanations. The final model achieves a PR-AUC of 0.232 against a ~0.21 random baseline&mdash;confirming that standard scheduling data at T-24h without real-time weather carries limited predictive signal. This honest result establishes an empirical baseline for the domain under strict leakage prevention, and motivates future work integrating weather forecasts and same-day operational state.</p>
     <p>The model is deployed as a Streamlit web application on Streamlit Community Cloud with an interactive 3D globe, SHAP waterfall chart, and airline-branded UI, as well as a FastAPI + React + Docker Compose alternative. Source code: <strong>https://github.com/Paras-Dhatwalia/Flight-Delay-Predictor</strong>.</p>
   </div>
 </div>
