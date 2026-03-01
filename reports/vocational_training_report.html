@@ -319,6 +319,7 @@ assert max(val_dates)   &lt; min(test_dates),  "Val/test date overlap detected"<
 
     <h3>6.1 Cyclic Temporal Encoding</h3>
     <p>Raw time variables are inherently circular (23:59 is adjacent to 00:01). Sin/cos encoding maps each value to the unit circle:</p>
+    <p><strong>Design trade-off:</strong> Cyclic sin/cos encoding is optimal for distance-based models (linear, neural networks) but suboptimal for tree-based models like LightGBM, which make axis-aligned splits and must build inefficient nested split staircases to approximate circular boundaries. Raw ordinal integers (hour 0&ndash;23, month 1&ndash;12) would be more tree-friendly. The pipeline includes <code>departure_hour</code> as a raw ordinal for this reason, but <code>DayOfWeek</code> and <code>Month</code> are only available via sin/cos. A future iteration should add raw ordinal <code>Month</code> and <code>DayOfWeek</code> features alongside or instead of their cyclic counterparts.</p>
     <div class="formula-box">
       x<sub>sin</sub> = sin(2&pi; &middot; t / T) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       x<sub>cos</sub> = cos(2&pi; &middot; t / T)
@@ -350,6 +351,7 @@ assert max(val_dates)   &lt; min(test_dates),  "Val/test date overlap detected"<
       airline_delay_rate = w &middot; (n<sub>delayed</sub> + 1) / (n<sub>total</sub> + 2) + (1 &minus; w) &middot; p<sub>global</sub>
     </div>
     <p>Laplace smoothing (+1 / +2) prevents extreme rates. Both computed on training data only; applied to val/test via lookup.</p>
+    <p><strong>Known limitation&mdash;static aggregation:</strong> Both rates are computed as fixed averages over the entire January&ndash;August training window. This means a February flight&rsquo;s features include delay statistics from July and August&mdash;a subtle form of look-ahead bias within the training set. A more rigorous approach would use an expanding or rolling window (e.g., only flights from the preceding 30 days). The current static approach was chosen for implementation simplicity; the impact on val/test generalisation is mitigated because those splits use the same frozen training-set aggregates.</p>
 
     <h3>6.4 K-Fold Smoothed Target Encoding</h3>
     <p>High-cardinality categoricals (ORIGIN: 300+ airports, TAIL_NUM: 5,000+ aircraft) are target-encoded with K=5 out-of-fold encoding to prevent target leakage:</p>
@@ -470,11 +472,13 @@ max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
       <tr><td><strong>Brier Score</strong></td><td>Calibration error (lower is better)</td></tr>
     </table>
 
-    <h3>9.3 Test-Set Results</h3>
+    <h3>9.3 Test-Set Results &amp; Honest Assessment</h3>
+    <p>The model achieves a <strong>PR-AUC of 0.232</strong> and <strong>ROC-AUC of 0.599</strong> on the held-out November&ndash;December test set. Given a ~21% positive class rate, the random-classifier PR-AUC baseline is approximately 0.21. The model therefore provides only <strong>marginal lift over random</strong> (&Delta;PR-AUC &asymp; 0.02).</p>
+    <p>This result is not surprising: at T-24h without real-time weather data, the available scheduling features (airline, route, time-of-day, seasonality) carry limited predictive signal. Weather alone accounts for ~30% of all delay minutes, and operational cascades (late inbound aircraft, ground stops) are inherently unpredictable a full day in advance. The model&rsquo;s performance should be interpreted as an <strong>empirical ceiling</strong> of how much signal exists in standard scheduling data under strict leakage prevention&mdash;not as a deployable high-accuracy system. SHAP attributions at this performance level should be interpreted with caution, as they reflect weak rather than strong predictive signal.</p>
     <img src="pr_curve.png" alt="PR Curve" style="width:100%;max-width:520px;display:block;margin:0 auto;">
-    <p class="figure-caption">Precision&ndash;Recall curve on held-out Nov&ndash;Dec test set</p>
+    <p class="figure-caption">Precision&ndash;Recall curve on held-out Nov&ndash;Dec test set (PR-AUC = 0.232)</p>
     <img src="roc_curve.png" alt="ROC Curve" style="width:100%;max-width:520px;display:block;margin:10px auto 0;">
-    <p class="figure-caption">ROC curve on held-out Nov&ndash;Dec test set</p>
+    <p class="figure-caption">ROC curve on held-out Nov&ndash;Dec test set (ROC-AUC = 0.599)</p>
 
     <h3>9.4 Confusion Matrix</h3>
     <p><strong>False Negatives</strong> (delayed flights predicted on-time) carry higher cost than <strong>False Positives</strong> (on-time flights predicted delayed). The <code>scale_pos_weight</code> parameter and threshold tuning both shift the model toward higher recall when desired.</p>
@@ -633,6 +637,9 @@ max_rounds: 3,000    early_stopping: 100 rounds</code></pre>
       <li><strong>No operational state:</strong> Cannot account for active ground stops, runway closures, or cascading delays&mdash;only available minutes before departure.</li>
       <li><strong>Binary simplification:</strong> Predicts delayed/on-time only, not delay magnitude. Regression could address this.</li>
       <li><strong>Cold start:</strong> New airlines/airports/aircraft receive the global mean delay rate until sufficient data accumulates.</li>
+      <li><strong>TAIL_NUM operational volatility:</strong> The model assumes the scheduled aircraft tail number is known at T-24h. In practice, airlines frequently execute &ldquo;tail swaps&rdquo; due to unexpected maintenance, late inbound aircraft, or network rerouting. The actual tail number at departure may differ from the one available 24 hours prior, making <code>TAIL_NUM_te</code> a noisy feature under real conditions.</li>
+      <li><strong>Static historical aggregates:</strong> Route and airline delay rates are computed as fixed averages over the entire training window rather than expanding or rolling windows. This introduces subtle look-ahead bias within the training set (a February flight sees July/August statistics), though val/test sets use frozen aggregates.</li>
+      <li><strong>Suboptimal cyclic encoding for trees:</strong> Sin/cos temporal features are less efficient for LightGBM&rsquo;s axis-aligned splits than raw ordinal integers. Raw <code>Month</code> and <code>DayOfWeek</code> ordinals should supplement or replace cyclic pairs.</li>
     </ul>
 
     <h3>14.2 Future Scope</h3>
