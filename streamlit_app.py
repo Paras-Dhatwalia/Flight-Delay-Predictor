@@ -85,6 +85,32 @@ FEATURE_DISPLAY: Dict[str, str] = {
     "is_near_holiday":   "Holiday proximity",
 }
 
+AIRLINE_BRANDS: Dict[str, Dict[str, str]] = {
+    "AA": {"color": "#0078D2", "accent": "rgba(0,120,210,0.12)",
+            "logo": "https://logo.clearbit.com/aa.com"},
+    "DL": {"color": "#C01933", "accent": "rgba(192,25,51,0.12)",
+            "logo": "https://logo.clearbit.com/delta.com"},
+    "UA": {"color": "#005DAA", "accent": "rgba(0,93,170,0.12)",
+            "logo": "https://logo.clearbit.com/united.com"},
+    "WN": {"color": "#F9B612", "accent": "rgba(249,182,18,0.12)",
+            "logo": "https://logo.clearbit.com/southwest.com"},
+    "B6": {"color": "#003876", "accent": "rgba(0,56,118,0.12)",
+            "logo": "https://logo.clearbit.com/jetblue.com"},
+    "AS": {"color": "#01426A", "accent": "rgba(1,66,106,0.12)",
+            "logo": "https://logo.clearbit.com/alaskaair.com"},
+    "NK": {"color": "#FFE500", "accent": "rgba(255,229,0,0.12)",
+            "logo": "https://logo.clearbit.com/spirit.com"},
+    "F9": {"color": "#00B140", "accent": "rgba(0,177,64,0.12)",
+            "logo": "https://logo.clearbit.com/flyfrontier.com"},
+    "G4": {"color": "#003B70", "accent": "rgba(0,59,112,0.12)",
+            "logo": "https://logo.clearbit.com/allegiantair.com"},
+    "HA": {"color": "#6B2FA0", "accent": "rgba(107,47,160,0.12)",
+            "logo": "https://logo.clearbit.com/hawaiianairlines.com"},
+    "SY": {"color": "#F7931E", "accent": "rgba(247,147,30,0.12)",
+            "logo": "https://logo.clearbit.com/suncountry.com"},
+}
+_DEFAULT_BRAND = {"color": "#38bdf8", "accent": "rgba(56,189,248,0.12)", "logo": ""}
+
 _ROUTE_DISTANCES: Dict[frozenset, float] = {
     frozenset({"JFK","LAX"}):2475, frozenset({"JFK","SFO"}):2586,
     frozenset({"JFK","ORD"}):740,  frozenset({"JFK","MIA"}):1089,
@@ -509,6 +535,136 @@ def create_waterfall(all_shap: Dict[str, float], base_value: float) -> go.Figure
 
 
 # ═══════════════════════════════════════════════════════════════
+#  3D GLOBE
+# ═══════════════════════════════════════════════════════════════
+
+def render_route_globe(origin: str, dest: str, airline: str) -> None:
+    """Render an interactive 3D globe with the flight route arc."""
+    import streamlit.components.v1 as components
+
+    o_coords = _AIRPORT_COORDS.get(origin)
+    d_coords = _AIRPORT_COORDS.get(dest)
+    if not o_coords or not d_coords:
+        st.caption("Globe unavailable — airport coordinates not found.")
+        return
+
+    o_lat, o_lng = o_coords
+    d_lat, d_lng = d_coords
+    mid_lat = (o_lat + d_lat) / 2
+    mid_lng = (o_lng + d_lng) / 2
+
+    brand = AIRLINE_BRANDS.get(airline, _DEFAULT_BRAND)
+    arc_color = brand["color"]
+
+    html = f"""
+    <!DOCTYPE html>
+    <html><head><meta charset="utf-8">
+    <style>
+      * {{ margin:0; padding:0; box-sizing:border-box; }}
+      body {{ background: transparent; overflow: hidden; }}
+      #globe-container {{
+        width: 100%; height: 480px; border-radius: 14px;
+        overflow: hidden; position: relative;
+        background: radial-gradient(ellipse at center, #0a1628 0%, #000 100%);
+      }}
+    </style></head>
+    <body>
+    <div id="globe-container"></div>
+
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.33.0/dist/globe.gl.min.js"></script>
+    <script>
+    (function() {{
+      const container = document.getElementById('globe-container');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      const globe = Globe()
+        (container)
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        .backgroundImageUrl('')
+        .backgroundColor('rgba(0,0,0,0)')
+        .atmosphereColor('#38bdf8')
+        .atmosphereAltitude(0.18)
+        .width(w)
+        .height(h);
+
+      // Arc
+      const arcData = [{{
+        startLat: {o_lat}, startLng: {o_lng},
+        endLat: {d_lat},   endLng: {d_lng},
+        color: ['{arc_color}', '#38bdf8']
+      }}];
+      globe
+        .arcsData(arcData)
+        .arcColor('color')
+        .arcAltitudeAutoScale(0.45)
+        .arcStroke(1.5)
+        .arcDashLength(0.6)
+        .arcDashGap(0.3)
+        .arcDashAnimateTime(2500);
+
+      // Airport markers
+      const points = [
+        {{ lat: {o_lat}, lng: {o_lng}, label: '{origin}', size: 0.6, color: '#22c55e' }},
+        {{ lat: {d_lat}, lng: {d_lng}, label: '{dest}',   size: 0.6, color: '#ef4444' }}
+      ];
+      globe
+        .pointsData(points)
+        .pointColor('color')
+        .pointAltitude(0.01)
+        .pointRadius('size')
+        .pointsMerge(false);
+
+      // Airport IATA labels
+      globe
+        .labelsData(points)
+        .labelLat('lat')
+        .labelLng('lng')
+        .labelText('label')
+        .labelSize(1.8)
+        .labelDotRadius(0.4)
+        .labelColor(() => '#f1f5f9')
+        .labelAltitude(0.02)
+        .labelResolution(2);
+
+      // Plane at midpoint
+      const planeData = [{{
+        lat: {mid_lat}, lng: {mid_lng}, label: '✈', size: 2.2
+      }}];
+      globe
+        .htmlElementsData(planeData)
+        .htmlLat('lat')
+        .htmlLng('lng')
+        .htmlAltitude(0.08)
+        .htmlElement(d => {{
+          const el = document.createElement('div');
+          el.style.cssText = 'font-size:22px;filter:drop-shadow(0 0 6px {arc_color});pointer-events:none;';
+          el.textContent = '✈';
+          return el;
+        }});
+
+      // Camera — frame both airports
+      globe.pointOfView({{ lat: {mid_lat}, lng: {mid_lng}, altitude: 2.0 }}, 1000);
+
+      // Subtle auto-rotate
+      globe.controls().autoRotate = true;
+      globe.controls().autoRotateSpeed = 0.3;
+      globe.controls().enableZoom = true;
+
+      // Responsive
+      window.addEventListener('resize', () => {{
+        globe.width(container.clientWidth).height(container.clientHeight);
+      }});
+    }})();
+    </script>
+    </body></html>
+    """
+    components.html(html, height=490)
+
+
+# ═══════════════════════════════════════════════════════════════
 #  UI COMPONENTS
 # ═══════════════════════════════════════════════════════════════
 
@@ -647,19 +803,32 @@ def render_boarding_pass(fd: dict, dist: Optional[float], elapsed: Optional[floa
     d_s = f"{dist:,.0f} mi" if dist else "—"
     e_s = f"~{elapsed:.0f} min" if elapsed else "—"
 
+    brand = AIRLINE_BRANDS.get(al, _DEFAULT_BRAND)
+    bc = brand["color"]
+    logo_url = brand["logo"]
+    accent_bg = brand["accent"]
+
+    # Logo HTML — small image with fallback to text
+    logo_html = (
+        f'<img src="{logo_url}" alt="{al}" '
+        f'style="width:28px;height:28px;border-radius:6px;object-fit:contain;'
+        f'background:#fff;padding:2px;" onerror="this.style.display=\'none\'">'
+        if logo_url else ""
+    )
+
     st.markdown(f"""
-    <div class="boarding-pass">
-        <div class="bp-header">
+    <div class="boarding-pass" style="border-left:4px solid {bc};">
+        <div class="bp-header" style="background:{accent_bg};">
             <div class="bp-header-left">
-                <span class="bp-logo">✈</span>
+                {logo_html}
                 <span class="bp-tag">Flight Delay Analysis</span>
             </div>
-            <span class="bp-airline-tag">{al} · {al_name}</span>
+            <span class="bp-airline-tag" style="border:1px solid {bc}40;color:{bc};">{al} · {al_name}</span>
         </div>
         <div class="bp-body">
             <div class="bp-route">
                 <div><div class="bp-airport">{ori}</div><div class="bp-city">{ori_city}</div></div>
-                <div class="bp-route-line"><span class="bp-route-plane">✈</span></div>
+                <div class="bp-route-line"><span class="bp-route-plane" style="color:{bc};">✈</span></div>
                 <div><div class="bp-airport">{dst}</div><div class="bp-city">{dst_city}</div></div>
             </div>
             <div class="bp-info">
@@ -823,6 +992,10 @@ def main() -> None:
 
         # Boarding pass
         render_boarding_pass(fd, st.session_state.distance, st.session_state.elapsed)
+
+        # 3D Route Globe
+        st.markdown("#### 🌍 Flight Route")
+        render_route_globe(fd["origin"], fd["destination"], fd["airline"])
 
         # Gauge + Risk
         g_col, r_col = st.columns([1, 1.2])
