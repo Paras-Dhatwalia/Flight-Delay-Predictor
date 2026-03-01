@@ -661,7 +661,8 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
       // Add plane directly to Three.js scene (bypasses globe.gl re-creation)
       setTimeout(() => {{
         const scene = globe.scene();
-        const GLOBE_R = 100; // three-globe default radius
+        const camera = globe.camera();
+        const GLOBE_R = 100;
 
         // Draw plane emoji onto canvas → texture → sprite
         const canvas = document.createElement('canvas');
@@ -682,30 +683,38 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         planeSprite.scale.set(5, 5, 1);
         scene.add(planeSprite);
 
+        // Match three-globe polar2Cartesian exactly
         function geoTo3D(lat, lng, alt) {{
           const phi = (90 - lat) * Math.PI / 180;
-          const theta = (lng + 180) * Math.PI / 180;
+          const theta = (90 - lng) * Math.PI / 180;
           const r = GLOBE_R * (1 + alt);
           return new THREE.Vector3(
-            -r * Math.sin(phi) * Math.cos(theta),
-             r * Math.cos(phi),
-             r * Math.sin(phi) * Math.sin(theta)
+            r * Math.sin(phi) * Math.cos(theta),
+            r * Math.cos(phi),
+            -r * Math.sin(phi) * Math.sin(theta)
           );
         }}
 
         const startTime = performance.now();
         function animatePlane() {{
           const elapsed = performance.now() - startTime;
-          // Sync plane to dash gap: dashes move 0→1 over CYCLE_MS
           const dashFrac = (elapsed % CYCLE_MS) / CYCLE_MS;
-          // Place plane at centre of the first gap
           const t = (dashFrac + DASH_LEN / DASH_UNIT + DASH_GAP / (2 * DASH_UNIT)) % 1;
+          const tAhead = Math.min(1, t + 0.02);
 
           const pos = gcInterp(t);
-          // Parabolic arc altitude matching globe.gl's arc curve
           const alt = arcPeakAlt * 4 * t * (1 - t);
           const worldPos = geoTo3D(pos.lat, pos.lng, alt);
           planeSprite.position.copy(worldPos);
+
+          // Rotate sprite so nose points toward destination
+          const posAhead = gcInterp(tAhead);
+          const altAhead = arcPeakAlt * 4 * tAhead * (1 - tAhead);
+          const wpAhead = geoTo3D(posAhead.lat, posAhead.lng, altAhead);
+          const cur2 = worldPos.clone().project(camera);
+          const fwd2 = wpAhead.clone().project(camera);
+          const screenAngle = Math.atan2(fwd2.y - cur2.y, fwd2.x - cur2.x);
+          material.rotation = screenAngle + Math.PI / 4;
 
           requestAnimationFrame(animatePlane);
         }}
