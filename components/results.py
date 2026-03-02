@@ -14,7 +14,7 @@ def render_boarding_pass(
     dist: Optional[float],
     elapsed: Optional[float],
 ) -> None:
-    """Airline-branded boarding pass card."""
+    """Airline-branded boarding pass card matching real boarding pass styles."""
     al = fd["airline"]; ori = fd["origin"]; dst = fd["destination"]
     dt = datetime.combine(fd["dep_date"], fd["dep_time"])
     al_name = AIRLINES.get(al, al)
@@ -25,40 +25,61 @@ def render_boarding_pass(
 
     brand = AIRLINE_BRANDS.get(al, _DEFAULT_BRAND)
     bc = brand["color"]
+    bc2 = brand.get("color2", bc)
+    tc = brand.get("text", "#fff")
     logo_url = brand["logo"]
-    accent_bg = brand["accent"]
 
-    # Logo HTML — small image with fallback to text
+    # Determine if header background is light (for dark text) or dark (for white text)
+    is_light_bg = tc != "#fff"
+
     logo_html = (
         f'<img src="{logo_url}" alt="{al}" '
-        f'style="width:28px;height:28px;border-radius:6px;object-fit:contain;'
+        f'style="width:32px;height:32px;border-radius:6px;object-fit:contain;'
         f'background:#fff;padding:2px;" onerror="this.style.display=\'none\'">'
         if logo_url else ""
     )
 
-    st.markdown(f"""
-    <div class="boarding-pass" style="border-left:4px solid {bc};">
-        <div class="bp-header" style="background:{accent_bg};">
-            <div class="bp-header-left">
-                {logo_html}
-                <span class="bp-tag">Flight Delay Analysis</span>
-            </div>
-            <span class="bp-airline-tag" style="border:1px solid {bc}40;color:{bc};">{al} · {al_name}</span>
-        </div>
-        <div class="bp-body">
-            <div class="bp-route">
-                <div><div class="bp-airport">{ori}</div><div class="bp-city">{ori_city}</div></div>
-                <div class="bp-route-line"><span class="bp-route-plane" style="color:{bc};">✈</span></div>
-                <div><div class="bp-airport">{dst}</div><div class="bp-city">{dst_city}</div></div>
-            </div>
-            <div class="bp-info">
-                <div class="bp-field"><div class="bp-label">Date</div><div class="bp-value">{dt.strftime('%b %d, %Y')}</div></div>
-                <div class="bp-field"><div class="bp-label">Time</div><div class="bp-value">{dt.strftime('%H:%M')}</div></div>
-                <div class="bp-field"><div class="bp-label">Distance</div><div class="bp-value">{d_s}</div></div>
-                <div class="bp-field"><div class="bp-label">Duration</div><div class="bp-value">{e_s}</div></div>
-            </div>
-        </div>
-    </div>""", unsafe_allow_html=True)
+    bp_html = (
+        f'<div style="border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.13);margin:18px 0 10px;max-width:540px;border:1.5px solid {bc}30;">'
+        # Header band
+        f'<div style="background:linear-gradient(135deg, {bc}, {bc2});padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">'
+        f'<div style="display:flex;align-items:center;gap:10px;">'
+        f'{logo_html}'
+        f'<span style="font-size:18px;font-weight:800;color:{tc};letter-spacing:0.5px;text-transform:uppercase;">{al_name}</span>'
+        f'</div>'
+        f'<span style="font-size:11px;font-weight:600;color:{tc};opacity:0.8;letter-spacing:1px;text-transform:uppercase;">Delay Analysis</span>'
+        f'</div>'
+        # Route section
+        f'<div style="padding:20px 22px 8px;background:#fff;">'
+        f'<div style="display:flex;align-items:center;justify-content:space-between;">'
+        f'<div style="text-align:left;">'
+        f'<div style="font-size:32px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">{ori}</div>'
+        f'<div style="font-size:11px;color:#888;margin-top:2px;">{ori_city}</div>'
+        f'</div>'
+        f'<div style="flex:1;text-align:center;position:relative;margin:0 18px;">'
+        f'<div style="border-top:2px dashed {bc}60;width:100%;position:absolute;top:50%;left:0;"></div>'
+        f'<span style="font-size:22px;position:relative;z-index:1;background:#fff;padding:0 8px;color:{bc};">✈</span>'
+        f'</div>'
+        f'<div style="text-align:right;">'
+        f'<div style="font-size:32px;font-weight:800;color:#1a1a1a;letter-spacing:2px;">{dst}</div>'
+        f'<div style="font-size:11px;color:#888;margin-top:2px;">{dst_city}</div>'
+        f'</div>'
+        f'</div>'
+        f'</div>'
+        # Details strip
+        f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:14px 22px 18px;background:#fff;border-top:1px dashed #e0e0e0;">'
+        f'<div><div style="font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Date</div>'
+        f'<div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-top:3px;">{dt.strftime("%b %d")}</div></div>'
+        f'<div><div style="font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Departs</div>'
+        f'<div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-top:3px;">{dt.strftime("%H:%M")}</div></div>'
+        f'<div><div style="font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Distance</div>'
+        f'<div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-top:3px;">{d_s}</div></div>'
+        f'<div><div style="font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Duration</div>'
+        f'<div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-top:3px;">{e_s}</div></div>'
+        f'</div>'
+        f'</div>'
+    )
+    st.markdown(bp_html, unsafe_allow_html=True)
 
 
 def render_risk_banner(

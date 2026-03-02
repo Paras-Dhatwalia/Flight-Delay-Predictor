@@ -62,33 +62,33 @@ FEATURE_DISPLAY: Dict[str, str] = {
     "is_near_holiday":   "Holiday proximity",
 }
 
-# ─── Airline Visual Branding ─────────────────────────────────
+# ─── Airline Visual Branding (actual boarding-pass colour schemes) ──
 AIRLINE_BRANDS: Dict[str, Dict[str, str]] = {
-    "AA": {"color": "#0078D2", "accent": "rgba(0,120,210,0.12)",
+    "AA": {"color": "#0078D2", "color2": "#B31B1B", "text": "#fff",
             "logo": "https://logo.clearbit.com/aa.com"},
-    "DL": {"color": "#C01933", "accent": "rgba(192,25,51,0.12)",
+    "DL": {"color": "#003366", "color2": "#E3132C", "text": "#fff",
             "logo": "https://logo.clearbit.com/delta.com"},
-    "UA": {"color": "#005DAA", "accent": "rgba(0,93,170,0.12)",
+    "UA": {"color": "#002244", "color2": "#00385F", "text": "#fff",
             "logo": "https://logo.clearbit.com/united.com"},
-    "WN": {"color": "#F9B612", "accent": "rgba(249,182,18,0.12)",
+    "WN": {"color": "#304CB2", "color2": "#D5152E", "text": "#fff",
             "logo": "https://logo.clearbit.com/southwest.com"},
-    "B6": {"color": "#003876", "accent": "rgba(0,56,118,0.12)",
+    "B6": {"color": "#003DA5", "color2": "#0033A0", "text": "#fff",
             "logo": "https://logo.clearbit.com/jetblue.com"},
-    "AS": {"color": "#01426A", "accent": "rgba(1,66,106,0.12)",
+    "AS": {"color": "#00385F", "color2": "#01426A", "text": "#fff",
             "logo": "https://logo.clearbit.com/alaskaair.com"},
-    "NK": {"color": "#FFE500", "accent": "rgba(255,229,0,0.12)",
+    "NK": {"color": "#FFE500", "color2": "#FFC72C", "text": "#1a1a1a",
             "logo": "https://logo.clearbit.com/spirit.com"},
-    "F9": {"color": "#00B140", "accent": "rgba(0,177,64,0.12)",
+    "F9": {"color": "#248168", "color2": "#00703C", "text": "#fff",
             "logo": "https://logo.clearbit.com/flyfrontier.com"},
-    "G4": {"color": "#003B70", "accent": "rgba(0,59,112,0.12)",
+    "G4": {"color": "#F48120", "color2": "#01579B", "text": "#fff",
             "logo": "https://logo.clearbit.com/allegiantair.com"},
-    "HA": {"color": "#6B2FA0", "accent": "rgba(107,47,160,0.12)",
+    "HA": {"color": "#4B2D89", "color2": "#CE0C88", "text": "#fff",
             "logo": "https://logo.clearbit.com/hawaiianairlines.com"},
-    "SY": {"color": "#F7931E", "accent": "rgba(247,147,30,0.12)",
+    "SY": {"color": "#F58232", "color2": "#004885", "text": "#fff",
             "logo": "https://logo.clearbit.com/suncountry.com"},
 }
 _DEFAULT_BRAND: Dict[str, str] = {
-    "color": "#38bdf8", "accent": "rgba(56,189,248,0.12)", "logo": ""
+    "color": "#38bdf8", "color2": "#1e3a5f", "text": "#fff", "logo": ""
 }
 
 # ─── Pre-computed Route Distances (miles) ────────────────────
