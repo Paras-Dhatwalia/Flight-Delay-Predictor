@@ -43,7 +43,7 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
       #globe-container {{
         width: 100%; height: 480px; border-radius: 14px;
         overflow: hidden; position: relative;
-        background: radial-gradient(ellipse at center, #0a1628 0%, #000 100%);
+        background: radial-gradient(ellipse at center, #1a3a5c 0%, #0a1628 100%);
       }}
     </style></head>
     <body>
@@ -64,7 +64,7 @@ def render_route_globe(origin: str, dest: str, airline: str) -> None:
         .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundImageUrl('')
         .backgroundColor('rgba(0,0,0,0)')
-        .atmosphereColor('#38bdf8')
+        .atmosphereColor('#286FB4')
         .atmosphereAltitude(0.18)
         .width(w)
         .height(h);

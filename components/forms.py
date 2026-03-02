@@ -100,7 +100,7 @@ def render_flight_form() -> Tuple[bool, Dict[str, Any]]:
             tail = st.text_input("🔖 Tail Number (optional)", value=dtl,
                                  placeholder="e.g. N123AA", max_chars=10)
 
-        submitted = st.form_submit_button("🔮 Analyze Delay Risk",
+        submitted = st.form_submit_button("Analyze Delay Risk",
                                           use_container_width=True, type="primary")
 
     return submitted, dict(airline=airline, origin=origin, destination=dest,

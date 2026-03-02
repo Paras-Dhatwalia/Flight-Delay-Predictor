@@ -12,16 +12,16 @@ from core import sigmoid
 
 def create_gauge(prob: float) -> go.Figure:
     """Semi-circle gauge chart for delay probability."""
-    color = "#22c55e" if prob < 0.3 else ("#eab308" if prob < 0.6 else "#ef4444")
+    color = "#16a34a" if prob < 0.3 else ("#ca8a04" if prob < 0.6 else "#dc2626")
     fig = go.Figure(go.Indicator(
         mode="gauge+number", value=prob * 100,
-        number={"suffix": "%", "font": {"color": "#f1f5f9", "size": 42}},
-        title={"text": "Delay Probability", "font": {"color": "#94a3b8", "size": 14}},
+        number={"suffix": "%", "font": {"color": "#1a1a1a", "size": 42}},
+        title={"text": "Delay Probability", "font": {"color": "#5a7186", "size": 14}},
         gauge={
-            "axis": {"range": [0, 100], "tickwidth": 0, "tickcolor": "#334155",
-                     "tickfont": {"color": "#475569"}, "dtick": 20},
+            "axis": {"range": [0, 100], "tickwidth": 0, "tickcolor": "#B0DDE4",
+                     "tickfont": {"color": "#5a7186"}, "dtick": 20},
             "bar": {"color": color, "thickness": 0.75},
-            "bgcolor": "#1e293b", "borderwidth": 0,
+            "bgcolor": "#FFFFFF", "borderwidth": 0,
             "steps": [
                 {"range": [0, 30],   "color": "rgba(34,197,94,0.1)"},
                 {"range": [30, 60],  "color": "rgba(234,179,8,0.1)"},
@@ -31,7 +31,7 @@ def create_gauge(prob: float) -> go.Figure:
     ))
     fig.update_layout(
         height=260, margin=dict(l=30, r=30, t=40, b=10),
-        paper_bgcolor="rgba(0,0,0,0)", font={"color": "#f1f5f9"},
+        paper_bgcolor="rgba(0,0,0,0)", font={"color": "#1a1a1a"},
     )
     return fig
 
@@ -73,27 +73,27 @@ def create_waterfall(all_shap: Dict[str, float], base_value: float) -> go.Figure
     fig = go.Figure(go.Waterfall(
         orientation="h", y=names, x=vals, measure=measures,
         text=labels, textposition="outside",
-        textfont={"color": "#94a3b8", "size": 11},
-        increasing={"marker": {"color": "rgba(239,68,68,0.65)",
-                                "line": {"color": "#ef4444", "width": 1}}},
-        decreasing={"marker": {"color": "rgba(59,130,246,0.65)",
-                                "line": {"color": "#3b82f6", "width": 1}}},
-        totals={"marker": {"color": "rgba(139,92,246,0.65)",
+        textfont={"color": "#4a6274", "size": 11},
+        increasing={"marker": {"color": "rgba(220,38,38,0.7)",
+                                "line": {"color": "#dc2626", "width": 1}}},
+        decreasing={"marker": {"color": "rgba(40,111,180,0.7)",
+                                "line": {"color": "#286FB4", "width": 1}}},
+        totals={"marker": {"color": "rgba(139,92,246,0.7)",
                             "line": {"color": "#8b5cf6", "width": 1}}},
-        connector={"line": {"color": "#334155", "width": 1, "dash": "dot"}},
+        connector={"line": {"color": "#B0DDE4", "width": 1, "dash": "dot"}},
     ))
     fig.update_layout(
         height=max(260, (n_show + 3) * 40),
         margin=dict(l=10, r=80, t=10, b=10),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        xaxis={"showgrid": True, "gridcolor": "rgba(51,65,85,0.3)",
-               "zeroline": True, "zerolinecolor": "#475569",
-               "tickfont": {"color": "#64748b", "size": 10},
+        xaxis={"showgrid": True, "gridcolor": "rgba(176,221,228,0.4)",
+               "zeroline": True, "zerolinecolor": "#286FB4",
+               "tickfont": {"color": "#5a7186", "size": 10},
                "title": {"text": "Model output (log-odds)",
-                         "font": {"color": "#475569", "size": 10}}},
-        yaxis={"tickfont": {"color": "#cbd5e1", "size": 12},
+                         "font": {"color": "#5a7186", "size": 10}}},
+        yaxis={"tickfont": {"color": "#1a1a1a", "size": 12},
                "autorange": "reversed"},
-        font={"color": "#f1f5f9"}, showlegend=False,
+        font={"color": "#1a1a1a"}, showlegend=False,
     )
     return fig
 
@@ -115,9 +115,9 @@ def render_shap_section(
 
     st.markdown("""
     <div class="shap-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.7);"></div>Increases delay risk</div>
-        <div class="legend-item"><div class="legend-dot" style="background:rgba(59,130,246,0.7);"></div>Decreases delay risk</div>
-        <div class="legend-item"><div class="legend-dot" style="background:rgba(139,92,246,0.7);"></div>Baseline / Prediction</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(220,38,38,0.8);"></div>Increases delay risk</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(40,111,180,0.8);"></div>Decreases delay risk</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(139,92,246,0.8);"></div>Baseline / Prediction</div>
     </div>""", unsafe_allow_html=True)
 
     with st.expander("ℹ️ How does the model calculate this?"):

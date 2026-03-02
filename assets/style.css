@@ -3,7 +3,7 @@
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 14px; background: rgba(34,197,94,0.1);
     border: 1px solid rgba(34,197,94,0.3); border-radius: 20px;
-    font-size: 0.75rem; color: #4ade80;
+    font-size: 0.75rem; color: #16a34a;
 }
 .status-dot {
     width: 8px; height: 8px; background: #22c55e;
@@ -16,17 +16,17 @@
 /* ─── Header ─── */
 .app-header { text-align: center; padding: 1.5rem 0 0.5rem; }
 .app-title {
-    font-size: 2rem; font-weight: 700; color: #f1f5f9; margin: 0;
+    font-size: 2rem; font-weight: 700; color: #1a1a1a; margin: 0;
 }
 .app-subtitle {
-    font-size: 0.85rem; color: #64748b; margin-top: 4px;
+    font-size: 0.85rem; color: #5a7186; margin-top: 4px;
 }
 
 /* ─── Hero Empty State ─── */
 .hero-container {
     text-align: center; padding: 3.5rem 2rem; margin: 1.5rem 0;
-    background: linear-gradient(135deg, rgba(56,189,248,0.04) 0%, rgba(139,92,246,0.04) 100%);
-    border: 1px solid #1e293b; border-radius: 16px;
+    background: linear-gradient(135deg, rgba(40,111,180,0.06) 0%, rgba(176,221,228,0.15) 100%);
+    border: 1px solid #B0DDE4; border-radius: 16px;
 }
 .hero-icon {
     font-size: 3.5rem; display: block; margin-bottom: 0.8rem;
@@ -35,110 +35,110 @@
 @keyframes float {
     0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)}
 }
-.hero-title { font-size: 1.4rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
-.hero-text { color: #64748b; font-size: 0.9rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+.hero-title { font-size: 1.4rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem; }
+.hero-text { color: #5a7186; font-size: 0.9rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
 
-/* ─── Boarding Pass ─── */
+/* ─── Boarding Pass (legacy CSS classes — actual pass uses inline styles) ─── */
 .boarding-pass {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid #334155; border-radius: 16px;
+    background: #FFFFFF;
+    border: 1px solid #B0DDE4; border-radius: 16px;
     overflow: hidden; margin: 1rem 0; position: relative;
 }
 .boarding-pass::before, .boarding-pass::after {
     content: ''; position: absolute; width: 20px; height: 20px;
-    background: var(--background-color, #0f172a); border-radius: 50%;
+    background: #E2F0F9; border-radius: 50%;
     top: 50%; transform: translateY(-50%);
 }
 .boarding-pass::before { left: -10px; }
 .boarding-pass::after  { right: -10px; }
 .bp-header {
-    background: rgba(56,189,248,0.06); border-bottom: 1px dashed #334155;
+    background: rgba(40,111,180,0.06); border-bottom: 1px dashed #B0DDE4;
     padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
 }
 .bp-header-left { display: flex; align-items: center; gap: 8px; }
 .bp-logo { font-size: 1.1rem; }
 .bp-tag {
     font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
-    color: #38bdf8; text-transform: uppercase;
+    color: #286FB4; text-transform: uppercase;
 }
 .bp-airline-tag {
-    font-size: 0.7rem; color: #94a3b8;
-    background: rgba(148,163,184,0.08); padding: 3px 10px; border-radius: 10px;
+    font-size: 0.7rem; color: #5a7186;
+    background: rgba(40,111,180,0.06); padding: 3px 10px; border-radius: 10px;
 }
 .bp-body { padding: 18px 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .bp-route { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
-.bp-airport { font-size: 2rem; font-weight: 800; color: #f1f5f9; letter-spacing: 2px; }
-.bp-city { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
+.bp-airport { font-size: 2rem; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }
+.bp-city { font-size: 0.65rem; color: #5a7186; margin-top: 2px; }
 .bp-route-line { flex: 1; text-align: center; position: relative; }
 .bp-route-line::before {
     content:''; position: absolute; top: 50%; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, #334155, #38bdf8, #334155);
+    background: linear-gradient(90deg, #B0DDE4, #286FB4, #B0DDE4);
 }
 .bp-route-plane {
     position: relative; z-index: 1; font-size: 1rem;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    padding: 0 8px; color: #38bdf8;
+    background: #FFFFFF;
+    padding: 0 8px; color: #286FB4;
 }
 .bp-info { display: flex; gap: 18px; flex-wrap: wrap; }
 .bp-field { min-width: 65px; }
 .bp-label {
     font-size: 0.55rem; font-weight: 600; letter-spacing: 1.5px;
-    color: #64748b; text-transform: uppercase; margin-bottom: 3px;
+    color: #5a7186; text-transform: uppercase; margin-bottom: 3px;
 }
-.bp-value { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; }
+.bp-value { font-size: 0.95rem; font-weight: 600; color: #1a1a1a; }
 
 /* ─── Risk Banner ─── */
 .risk-banner { padding: 18px 22px; border-radius: 12px; margin: 0.5rem 0; border: 1px solid; }
-.risk-banner-low    { background: rgba(34,197,94,0.06);  border-color: rgba(34,197,94,0.2); }
-.risk-banner-medium { background: rgba(234,179,8,0.06);  border-color: rgba(234,179,8,0.2); }
-.risk-banner-high   { background: rgba(239,68,68,0.06);  border-color: rgba(239,68,68,0.2); }
+.risk-banner-low    { background: rgba(34,197,94,0.08);  border-color: rgba(34,197,94,0.3); }
+.risk-banner-medium { background: rgba(234,179,8,0.08);  border-color: rgba(234,179,8,0.3); }
+.risk-banner-high   { background: rgba(239,68,68,0.08);  border-color: rgba(239,68,68,0.3); }
 .risk-verdict { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
-.risk-verdict-low    { color: #4ade80; }
-.risk-verdict-medium { color: #facc15; }
-.risk-verdict-high   { color: #f87171; }
-.risk-detail { font-size: 0.82rem; color: #94a3b8; line-height: 1.6; }
+.risk-verdict-low    { color: #16a34a; }
+.risk-verdict-medium { color: #ca8a04; }
+.risk-verdict-high   { color: #dc2626; }
+.risk-detail { font-size: 0.82rem; color: #4a6274; line-height: 1.6; }
 .risk-tip {
-    font-size: 0.78rem; color: #64748b; margin-top: 10px;
-    padding-top: 10px; border-top: 1px solid rgba(71,85,105,0.3);
+    font-size: 0.78rem; color: #5a7186; margin-top: 10px;
+    padding-top: 10px; border-top: 1px solid rgba(176,221,228,0.5);
 }
 
 /* ─── Metric Cards ─── */
 div[data-testid="stMetric"] {
-    background: #1e293b; border: 1px solid #334155;
+    background: #FFFFFF; border: 1px solid #B0DDE4;
     border-radius: 10px; padding: 14px;
 }
 div[data-testid="stMetric"] label {
-    color: #64748b !important; font-size: 0.65rem !important;
+    color: #5a7186 !important; font-size: 0.65rem !important;
     text-transform: uppercase; letter-spacing: 1px;
 }
 div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-    color: #f1f5f9 !important;
+    color: #1a1a1a !important;
 }
 
 /* ─── Sidebar Metric ─── */
 .sb-metric {
-    background: rgba(30,41,59,0.5); border: 1px solid #334155;
+    background: rgba(255,255,255,0.7); border: 1px solid #B0DDE4;
     border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
 }
 .sb-metric-label {
-    font-size: 0.6rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px;
+    font-size: 0.6rem; color: #5a7186; text-transform: uppercase; letter-spacing: 1px;
 }
-.sb-metric-value { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; margin-top: 2px; }
+.sb-metric-value { font-size: 1.05rem; font-weight: 700; color: #1a1a1a; margin-top: 2px; }
 
 /* ─── SHAP Legend ─── */
 .shap-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: #94a3b8; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: #4a6274; }
 .legend-dot  { width: 10px; height: 10px; border-radius: 3px; }
 
 /* ─── Route Preview ─── */
 .route-preview {
     text-align: center; margin: 0.8rem 0 0.3rem; padding: 12px;
-    background: rgba(56,189,248,0.04); border-radius: 10px; border: 1px solid #1e293b;
+    background: rgba(40,111,180,0.06); border-radius: 10px; border: 1px solid #B0DDE4;
 }
 .route-code {
-    font-size: 1.8rem; font-weight: 800; color: #f1f5f9; letter-spacing: 3px;
+    font-size: 1.8rem; font-weight: 800; color: #1a1a1a; letter-spacing: 3px;
 }
-.route-arrow { color: #38bdf8; margin: 0 12px; font-size: 1.1rem; }
+.route-arrow { color: #286FB4; margin: 0 12px; font-size: 1.1rem; }
 
 /* ─── Footer ─── */
-.app-footer { text-align: center; padding: 1.5rem 0; font-size: 0.7rem; color: #475569; }
+.app-footer { text-align: center; padding: 1.5rem 0; font-size: 0.7rem; color: #6b7f8e; }
